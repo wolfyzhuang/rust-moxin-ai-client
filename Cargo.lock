@@ -995,3 +995,210 @@ dependencies = [
  "makepad-math",
  "makepad-micro-serde",
 ]
+
+[[package]]
+name = "makepad-markdown"
+version = "0.4.0"
+source = "git+https://github.com/makepad/makepad?branch=rik#bd972c6d386e839b3cf885f36099583420cbec01"
+dependencies = [
+ "makepad-live-id",
+]
+
+[[package]]
+name = "makepad-math"
+version = "0.4.0"
+source = "git+https://github.com/makepad/makepad?branch=rik#bd972c6d386e839b3cf885f36099583420cbec01"
+
+[[package]]
+name = "makepad-micro-proc-macro"
+version = "0.4.0"
+source = "git+https://github.com/makepad/makepad?branch=rik#bd972c6d386e839b3cf885f36099583420cbec01"
+
+[[package]]
+name = "makepad-micro-serde"
+version = "0.4.0"
+source = "git+https://github.com/makepad/makepad?branch=rik#bd972c6d386e839b3cf885f36099583420cbec01"
+dependencies = [
+ "makepad-micro-serde-derive",
+]
+
+[[package]]
+name = "makepad-micro-serde-derive"
+version = "0.4.0"
+source = "git+https://github.com/makepad/makepad?branch=rik#bd972c6d386e839b3cf885f36099583420cbec01"
+dependencies = [
+ "makepad-micro-proc-macro",
+]
+
+[[package]]
+name = "makepad-objc-sys"
+version = "0.4.0"
+source = "git+https://github.com/makepad/makepad?branch=rik#bd972c6d386e839b3cf885f36099583420cbec01"
+
+[[package]]
+name = "makepad-platform"
+version = "0.6.0"
+source = "git+https://github.com/makepad/makepad?branch=rik#bd972c6d386e839b3cf885f36099583420cbec01"
+dependencies = [
+ "makepad-android-state",
+ "makepad-futures",
+ "makepad-futures-legacy",
+ "makepad-http",
+ "makepad-jni-sys",
+ "makepad-objc-sys",
+ "makepad-shader-compiler",
+ "makepad-wasm-bridge",
+ "makepad-windows",
+ "smallvec",
+ "windows-targets 0.48.5",
+]
+
+[[package]]
+name = "makepad-rustybuzz"
+version = "0.8.0"
+source = "git+https://github.com/makepad/makepad?branch=rik#bd972c6d386e839b3cf885f36099583420cbec01"
+dependencies = [
+ "bitflags 1.3.2",
+ "bytemuck",
+ "smallvec",
+ "ttf-parser",
+ "unicode-bidi-mirroring",
+ "unicode-ccc",
+ "unicode-properties",
+ "unicode-script",
+]
+
+[[package]]
+name = "makepad-shader-compiler"
+version = "0.5.0"
+source = "git+https://github.com/makepad/makepad?branch=rik#bd972c6d386e839b3cf885f36099583420cbec01"
+dependencies = [
+ "makepad-live-compiler",
+]
+
+[[package]]
+name = "makepad-vector"
+version = "0.4.0"
+source = "git+https://github.com/makepad/makepad?branch=rik#bd972c6d386e839b3cf885f36099583420cbec01"
+dependencies = [
+ "ttf-parser",
+]
+
+[[package]]
+name = "makepad-wasm-bridge"
+version = "0.4.0"
+source = "git+https://github.com/makepad/makepad?branch=rik#bd972c6d386e839b3cf885f36099583420cbec01"
+dependencies = [
+ "makepad-derive-wasm-bridge",
+ "makepad-live-id",
+]
+
+[[package]]
+name = "makepad-widgets"
+version = "0.6.0"
+source = "git+https://github.com/makepad/makepad?branch=rik#bd972c6d386e839b3cf885f36099583420cbec01"
+dependencies = [
+ "makepad-derive-widget",
+ "makepad-draw",
+ "makepad-html",
+ "makepad-markdown",
+ "makepad-zune-jpeg",
+ "makepad-zune-png",
+]
+
+[[package]]
+name = "makepad-windows"
+version = "0.51.1"
+source = "git+https://github.com/makepad/makepad?branch=rik#bd972c6d386e839b3cf885f36099583420cbec01"
+dependencies = [
+ "windows-core 0.51.1",
+ "windows-targets 0.48.5",
+]
+
+[[package]]
+name = "makepad-zune-core"
+version = "0.2.14"
+source = "git+https://github.com/makepad/makepad?branch=rik#bd972c6d386e839b3cf885f36099583420cbec01"
+dependencies = [
+ "bitflags 2.5.0",
+]
+
+[[package]]
+name = "makepad-zune-inflate"
+version = "0.2.54"
+source = "git+https://github.com/makepad/makepad?branch=rik#bd972c6d386e839b3cf885f36099583420cbec01"
+dependencies = [
+ "simd-adler32",
+]
+
+[[package]]
+name = "makepad-zune-jpeg"
+version = "0.3.17"
+source = "git+https://github.com/makepad/makepad?branch=rik#bd972c6d386e839b3cf885f36099583420cbec01"
+dependencies = [
+ "makepad-zune-core",
+]
+
+[[package]]
+name = "makepad-zune-png"
+version = "0.2.1"
+source = "git+https://github.com/makepad/makepad?branch=rik#bd972c6d386e839b3cf885f36099583420cbec01"
+dependencies = [
+ "makepad-zune-core",
+ "makepad-zune-inflate",
+]
+
+[[package]]
+name = "memchr"
+version = "2.7.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6c8640c5d730cb13ebd907d8d04b52f55ac9a2eec55b440c8892f40d56c76c1d"
+
+[[package]]
+name = "mime"
+version = "0.3.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6877bb514081ee2a7ff5ef9de3281f14a4dd4bceac4c09388074a6b5df8a139a"
+
+[[package]]
+name = "minimal-lexical"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "68354c5c6bd36d73ff3feceb05efa59b6acb7626617f4962be322a825e61f79a"
+
+[[package]]
+name = "miniz_oxide"
+version = "0.7.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9d811f3e15f28568be3407c8e7fdb6514c1cda3cb30683f15b6a1a1dc4ea14a7"
+dependencies = [
+ "adler",
+]
+
+[[package]]
+name = "mio"
+version = "0.8.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a4a650543ca06a924e8b371db273b2756685faae30f8487da1b56505a8f78b0c"
+dependencies = [
+ "libc",
+ "wasi",
+ "windows-sys 0.48.0",
+]
+
+[[package]]
+name = "moxin-backend"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "crossbeam",
+ "futures-util",
+ "log",
+ "moxin-protocol",
+ "reqwest",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "tokio",
+ "uuid",
