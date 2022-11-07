@@ -8,4 +8,9 @@ fi
 
 check_wasmedge() {
     if command -v $WASMEDGE_CMD > /dev/null; then
-        local wasmedge_ou
+        local wasmedge_output=$($WASMEDGE_CMD)
+        if echo "$wasmedge_output" | grep -q 'nn-preload'; then
+            return 0
+        else
+            echo "Wasmedge is installed but WASI NN plugin is not found."
+      
