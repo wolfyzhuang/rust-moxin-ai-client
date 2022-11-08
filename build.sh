@@ -13,4 +13,9 @@ check_wasmedge() {
             return 0
         else
             echo "Wasmedge is installed but WASI NN plugin is not found."
-      
+            echo "Please download WASI NN plugin."
+            echo "If you have already downloaded it, please set WASMEDGE_PLUGIN_PATH"
+            return 1
+        fi
+    else
+        e
