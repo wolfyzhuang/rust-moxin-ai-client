@@ -18,4 +18,6 @@ check_wasmedge() {
             return 1
         fi
     else
-        e
+        echo "Please install wasmedge."
+        echo "You can install wasmedge with the following command:"
+        echo "curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/maste
