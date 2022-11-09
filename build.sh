@@ -20,4 +20,15 @@ check_wasmedge() {
     else
         echo "Please install wasmedge."
         echo "You can install wasmedge with the following command:"
-        echo "curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/maste
+        echo "curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install_v2.sh | bash"
+        return 1
+    fi
+}
+
+main() {
+    if [[ $# -eq 0 ]]; then
+        echo "Usage: $0 [check|build|run] [--release]"
+        exit 1
+    fi
+
+    if [[ $1 == "check" ]]; th
