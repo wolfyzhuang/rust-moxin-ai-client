@@ -31,4 +31,16 @@ main() {
         exit 1
     fi
 
-    if [[ $1 == "check" ]]; th
+    if [[ $1 == "check" ]]; then
+        check_wasmedge
+        exit 0
+    fi
+
+    if ! check_wasmedge; then
+        exit 1
+    fi
+
+    local release_mode=0
+    if [[ $2 == "--release" ]]; then
+        release_mode=1
+  
