@@ -43,4 +43,12 @@ main() {
     local release_mode=0
     if [[ $2 == "--release" ]]; then
         release_mode=1
-  
+    fi
+
+    if [[ $1 == "build" ]]; then
+        if [[ $release_mode -eq 1 ]]; then
+            cargo build --release
+        else
+            cargo build
+        fi
+    elif [[ $1 == "run"
