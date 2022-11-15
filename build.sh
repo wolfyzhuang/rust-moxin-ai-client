@@ -58,4 +58,9 @@ main() {
             cargo run
         fi
     else
-        echo "Invalid argument. Use 'build', 'run'
+        echo "Invalid argument. Use 'build', 'run', or 'check'."
+        exit 1
+    fi
+}
+
+main "$@"
