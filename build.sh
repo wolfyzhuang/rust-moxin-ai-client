@@ -51,4 +51,11 @@ main() {
         else
             cargo build
         fi
-    elif [[ $1 == "run"
+    elif [[ $1 == "run" ]]; then
+        if [[ $release_mode -eq 1 ]]; then
+            cargo run --release
+        else
+            cargo run
+        fi
+    else
+        echo "Invalid argument. Use 'build', 'run'
