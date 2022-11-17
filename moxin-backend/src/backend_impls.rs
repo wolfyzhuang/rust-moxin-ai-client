@@ -319,3 +319,188 @@ mod chat_ui {
                 3 => TokenError::PromptTooLong,
                 4 => TokenError::TooLarge,
                 5 => TokenError::InvalidEncoding,
+                _ => TokenError::Other,
+            };
+
+            data.send_output(Err(token_err));
+
+            Ok(vec![])
+        } else {
+            Err(CoreError::Execution(CoreExecutionError::FuncTypeMismatch))
+        }
+    }
+
+    pub fn module(data: ChatBotUi) -> wasmedge_sdk::WasmEdgeResult<ImportObject<ChatBotUi>> {
+        let mut module_builder = wasmedge_sdk::ImportObjectBuilder::new("chat_ui", data)?;
+        module_builder.with_func::<(i32, i32), i32>("get_input", get_input)?;
+        module_builder.with_func::<(i32, i32), i32>("push_token", push_token)?;
+        module_builder.with_func::<i32, ()>("return_token_error", return_token_error)?;
+
+        Ok(module_builder.build())
+    }
+
+    fn create_wasi(
+        file: &DownloadedFile,
+        load_model: &LoadModelOptions,
+    ) -> wasmedge_sdk::WasmEdgeResult<WasiModule> {
+        let ctx_size = if load_model.n_ctx > 0 {
+            Some(load_model.n_ctx.to_string())
+        } else {
+            None
+        };
+
+        let n_gpu_layers = match load_model.gpu_layers {
+            moxin_protocol::protocol::GPULayers::Specific(n) => Some(n.to_string()),
+            moxin_protocol::protocol::GPULayers::Max => None,
+        };
+
+        let batch_size = if load_model.n_batch > 0 {
+            Some(load_model.n_batch.to_string())
+        } else {
+            None
+        };
+
+        let mut prompt_template = load_model.prompt_template.clone();
+        if prompt_template.is_none() && !file.prompt_template.is_empty() {
+            prompt_template = Some(file.prompt_template.clone());
+        }
+
+        let reverse_prompt = if file.reverse_prompt.is_empty() {
+            None
+        } else {
+            Some(file.reverse_prompt.clone())
+        };
+
+        let module_alias = file.name.as_ref();
+
+        let mut args = vec!["chat_ui.wasm", "-a", module_alias];
+
+        macro_rules! add_args {
+            ($flag:expr, $value:expr) => {
+                if let Some(ref value) = $value {
+                    args.push($flag);
+                    args.push(value.as_str());
+                }
+            };
+        }
+
+        add_args!("-c", ctx_size);
+        add_args!("-g", n_gpu_layers);
+        add_args!("-b", batch_size);
+        add_args!("-p", prompt_template);
+        add_args!("-r", reverse_prompt);
+
+        WasiModule::create(Some(args), None, None)
+    }
+
+    pub fn nn_preload_file(file: &DownloadedFile) {
+        let file_path = Path::new(&file.download_dir)
+            .join(&file.model_id)
+            .join(&file.name);
+
+        let preloads = wasmedge_sdk::plugin::NNPreload::new(
+            file.name.clone(),
+            wasmedge_sdk::plugin::GraphEncoding::GGML,
+            wasmedge_sdk::plugin::ExecutionTarget::AUTO,
+            &file_path,
+        );
+        wasmedge_sdk::plugin::PluginManager::nn_preload(vec![preloads]);
+    }
+
+    pub fn run_wasm_by_downloaded_file(
+        wasm_module: Module,
+        request_rx: Receiver<(ChatRequestData, Sender<anyhow::Result<ChatResponse>>)>,
+        model_running_controller: Arc<AtomicBool>,
+        file: DownloadedFile,
+        load_model: LoadModelOptions,
+        tx: Sender<anyhow::Result<LoadModelResponse>>,
+    ) {
+        use wasmedge_sdk::vm::SyncInst;
+        use wasmedge_sdk::AsInstance;
+
+        let mut instances: HashMap<String, &mut (dyn SyncInst)> = HashMap::new();
+
+        let mut wasi = create_wasi(&file, &load_model).unwrap();
+        let mut chatui = module(ChatBotUi::new(
+            request_rx,
+            model_running_controller,
+            file,
+            load_model,
+            tx,
+        ))
+        .unwrap();
+
+        instances.insert(wasi.name().to_string(), wasi.as_mut());
+        let mut wasi_nn = wasmedge_sdk::plugin::PluginManager::load_plugin_wasi_nn().unwrap();
+        instances.insert(wasi_nn.name().unwrap(), &mut wasi_nn);
+        instances.insert(chatui.name().unwrap(), &mut chatui);
+
+        let store = Store::new(None, instances).unwrap();
+        let mut vm = Vm::new(store);
+        vm.register_module(None, wasm_module.clone()).unwrap();
+
+        let _ = vm.run_func(None, "_start", []);
+
+        log::debug!("wasm exit");
+    }
+
+    pub struct Model {
+        pub model_tx: Sender<(ChatRequestData, Sender<anyhow::Result<ChatResponse>>)>,
+        pub model_running_controller: Arc<AtomicBool>,
+        pub model_thread: JoinHandle<()>,
+    }
+
+    impl Model {
+        pub fn new_by_downloaded_file(
+            wasm_module: Module,
+            file: DownloadedFile,
+            options: LoadModelOptions,
+            tx: Sender<anyhow::Result<LoadModelResponse>>,
+        ) -> Self {
+            let (model_tx, request_rx) = std::sync::mpsc::channel();
+            let model_running_controller = Arc::new(AtomicBool::new(false));
+            let model_running_controller_ = model_running_controller.clone();
+
+            let model_thread = std::thread::spawn(move || {
+                run_wasm_by_downloaded_file(
+                    wasm_module,
+                    request_rx,
+                    model_running_controller_,
+                    file,
+                    options,
+                    tx,
+                )
+            });
+            Self {
+                model_tx,
+                model_thread,
+                model_running_controller,
+            }
+        }
+
+        pub fn chat(
+            &self,
+            data: ChatRequestData,
+            tx: Sender<anyhow::Result<ChatResponse>>,
+        ) -> bool {
+            self.model_tx.send((data, tx)).is_ok()
+        }
+
+        pub fn stop_chat(&self) {
+            self.model_running_controller
+                .store(false, Ordering::Release);
+        }
+
+        pub fn stop(self) {
+            let Self {
+                model_tx,
+                model_thread,
+                ..
+            } = self;
+            drop(model_tx);
+            let _ = model_thread.join();
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
