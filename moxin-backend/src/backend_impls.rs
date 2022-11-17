@@ -504,3 +504,184 @@ mod chat_ui {
 }
 
 #[derive(Clone, Debug)]
+enum ModelManagementCommand {
+    GetFeaturedModels(Sender<anyhow::Result<Vec<Model>>>),
+    SearchModels(String, Sender<anyhow::Result<Vec<Model>>>),
+    DownloadFile(FileID, Sender<anyhow::Result<FileDownloadResponse>>),
+    PauseDownload(FileID, Sender<anyhow::Result<()>>),
+    CancelDownload(FileID, Sender<anyhow::Result<()>>),
+    GetCurrentDownloads(Sender<anyhow::Result<Vec<PendingDownload>>>),
+    GetDownloadedFiles(Sender<anyhow::Result<Vec<DownloadedFile>>>),
+    DeleteFile(FileID, Sender<anyhow::Result<()>>),
+}
+
+#[derive(Clone, Debug)]
+enum ModelInteractionCommand {
+    LoadModel(
+        FileID,
+        LoadModelOptions,
+        Sender<anyhow::Result<LoadModelResponse>>,
+    ),
+    EjectModel(Sender<anyhow::Result<()>>),
+    Chat(ChatRequestData, Sender<anyhow::Result<ChatResponse>>),
+    StopChatCompletion(Sender<anyhow::Result<()>>),
+    // Command to start a local server to interact with chat models
+    StartLocalServer(
+        LocalServerConfig,
+        Sender<anyhow::Result<LocalServerResponse>>,
+    ),
+    // Command to stop the local server
+    StopLocalServer(Sender<anyhow::Result<()>>),
+}
+
+#[derive(Clone, Debug)]
+enum BuiltInCommand {
+    Model(ModelManagementCommand),
+    Interaction(ModelInteractionCommand),
+}
+
+impl From<Command> for BuiltInCommand {
+    fn from(value: Command) -> Self {
+        match value {
+            Command::GetFeaturedModels(tx) => {
+                Self::Model(ModelManagementCommand::GetFeaturedModels(tx))
+            }
+            Command::SearchModels(request, tx) => {
+                Self::Model(ModelManagementCommand::SearchModels(request, tx))
+            }
+            Command::DownloadFile(file_id, tx) => {
+                Self::Model(ModelManagementCommand::DownloadFile(file_id, tx))
+            }
+            Command::PauseDownload(file_id, tx) => {
+                Self::Model(ModelManagementCommand::PauseDownload(file_id, tx))
+            }
+            Command::CancelDownload(file_id, tx) => {
+                Self::Model(ModelManagementCommand::CancelDownload(file_id, tx))
+            }
+            Command::DeleteFile(file_id, tx) => {
+                Self::Model(ModelManagementCommand::DeleteFile(file_id, tx))
+            }
+            Command::GetCurrentDownloads(tx) => {
+                Self::Model(ModelManagementCommand::GetCurrentDownloads(tx))
+            }
+            Command::GetDownloadedFiles(tx) => {
+                Self::Model(ModelManagementCommand::GetDownloadedFiles(tx))
+            }
+            Command::LoadModel(file_id, options, tx) => {
+                Self::Interaction(ModelInteractionCommand::LoadModel(file_id, options, tx))
+            }
+            Command::EjectModel(tx) => Self::Interaction(ModelInteractionCommand::EjectModel(tx)),
+            Command::Chat(request, tx) => {
+                Self::Interaction(ModelInteractionCommand::Chat(request, tx))
+            }
+            Command::StopChatCompletion(tx) => {
+                Self::Interaction(ModelInteractionCommand::StopChatCompletion(tx))
+            }
+            Command::StartLocalServer(config, tx) => {
+                Self::Interaction(ModelInteractionCommand::StartLocalServer(config, tx))
+            }
+            Command::StopLocalServer(tx) => {
+                Self::Interaction(ModelInteractionCommand::StopLocalServer(tx))
+            }
+        }
+    }
+}
+
+#[test]
+fn test_chat() {
+    use moxin_protocol::open_ai::*;
+
+    let home = std::env::var("HOME").unwrap();
+    let bk = BackendImpl::build_command_sender(
+        format!("{home}/ai/models"),
+        format!("{home}/ai/models"),
+        3,
+    );
+
+    let (tx, rx) = std::sync::mpsc::channel();
+    let cmd = Command::GetDownloadedFiles(tx);
+    bk.send(cmd).unwrap();
+    let files = rx.recv().unwrap();
+    assert!(files.is_ok());
+    let files = files.unwrap();
+    let file = files.first().unwrap();
+    println!("{} {}", &file.file.id, &file.model.name);
+
+    let (tx, rx) = std::sync::mpsc::channel();
+    let cmd = Command::LoadModel(
+        file.file.id.clone(),
+        LoadModelOptions {
+            prompt_template: None,
+            gpu_layers: moxin_protocol::protocol::GPULayers::Max,
+            use_mlock: false,
+            n_batch: 512,
+            n_ctx: 512,
+            rope_freq_scale: 0.0,
+            rope_freq_base: 0.0,
+            context_overflow_policy: moxin_protocol::protocol::ContextOverflowPolicy::StopAtLimit,
+        },
+        tx,
+    );
+    bk.send(cmd).unwrap();
+    let r = rx.recv();
+    assert!(r.is_ok());
+    assert!(r.unwrap().is_ok());
+
+    let (tx, rx) = std::sync::mpsc::channel();
+    let cmd = Command::Chat(
+        ChatRequestData {
+            messages: vec![Message {
+                content: "hello".to_string(),
+                role: Role::User,
+                name: None,
+            }],
+            model: "llama-2-7b-chat.Q5_K_M".to_string(),
+            frequency_penalty: None,
+            logprobs: None,
+            top_logprobs: None,
+            max_tokens: None,
+            presence_penalty: None,
+            seed: None,
+            stop: None,
+            stream: Some(false),
+            temperature: None,
+            top_p: None,
+            n: None,
+            logit_bias: None,
+        },
+        tx,
+    );
+    bk.send(cmd).unwrap();
+    if let Ok(Ok(ChatResponse::ChatFinalResponseData(data))) = rx.recv() {
+        println!("{:?}", data.choices[0].message);
+    }
+
+    let (tx, rx) = std::sync::mpsc::channel();
+
+    bk.send(Command::EjectModel(tx)).unwrap();
+    rx.recv().unwrap().unwrap();
+}
+
+#[test]
+fn test_chat_stop() {
+    use moxin_protocol::open_ai::*;
+
+    let home = std::env::var("HOME").unwrap();
+    let bk = BackendImpl::build_command_sender(
+        format!("{home}/ai/models"),
+        format!("{home}/ai/models"),
+        3,
+    );
+
+    let (tx, rx) = std::sync::mpsc::channel();
+    let cmd = Command::GetDownloadedFiles(tx);
+    bk.send(cmd).unwrap();
+    let files = rx.recv().unwrap();
+    assert!(files.is_ok());
+    let files = files.unwrap();
+    let file = files.first().unwrap();
+    println!("{} {}", &file.file.id, &file.model.name);
+
+    let (tx, rx) = std::sync::mpsc::channel();
+    let cmd = Command::LoadModel(
+        file.file.id.clone(),
