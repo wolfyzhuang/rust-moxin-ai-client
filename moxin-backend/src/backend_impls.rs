@@ -909,3 +909,202 @@ impl BackendImpl {
                             let sql_conn = self.sql_conn.lock().unwrap();
                             let models = RemoteModel::to_model(&remote_model, &sql_conn)
                                 .map_err(|e| anyhow::anyhow!("get featured error: {e}"));
+
+                            let _ = tx.send(models);
+                        }
+                        Err(e) => {
+                            let _ = tx.send(Err(anyhow::anyhow!("get featured models error: {e}")));
+                        }
+                    }
+                }
+                ModelManagementCommand::SearchModels(search_text, tx) => {
+                    let res = store::RemoteModel::search(&search_text, 100, 0);
+                    match res {
+                        Ok(remote_model) => {
+                            let sql_conn = self.sql_conn.lock().unwrap();
+                            let models = RemoteModel::to_model(&remote_model, &sql_conn)
+                                .map_err(|e| anyhow::anyhow!("search models error: {e}"));
+
+                            let _ = tx.send(models);
+                        }
+                        Err(e) => {
+                            let _ = tx.send(Err(anyhow::anyhow!("search models error: {e}")));
+                        }
+                    }
+                }
+                ModelManagementCommand::DownloadFile(file_id, tx) => {
+                    //search model from remote
+                    let search_model_from_remote = || -> anyhow::Result<( crate::store::models::Model , crate::store::download_files::DownloadedFile)> {
+                        let (model_id, file) = file_id
+                            .split_once("#")
+                            .ok_or_else(|| anyhow::anyhow!("Illegal file_id"))?;
+                        let mut res = store::RemoteModel::search(&model_id, 10, 0)
+                            .map_err(|e| anyhow::anyhow!("search models error: {e}"))?;
+                        let remote_model = res
+                            .pop()
+                            .ok_or_else(|| anyhow::anyhow!("model not found"))?;
+
+                        let remote_file = remote_model
+                            .files
+                            .into_iter()
+                            .find(|f| f.name == file)
+                            .ok_or_else(|| anyhow::anyhow!("file not found"))?;
+
+                        let download_model = crate::store::models::Model {
+                            id: Arc::new(remote_model.id),
+                            name: remote_model.name,
+                            summary: remote_model.summary,
+                            size: remote_model.size,
+                            requires: remote_model.requires,
+                            architecture: remote_model.architecture,
+                            released_at: remote_model.released_at,
+                            prompt_template: remote_model.prompt_template.clone(),
+                            reverse_prompt: remote_model.reverse_prompt.clone(),
+                            author: Arc::new(crate::store::models::Author {
+                                name: remote_model.author.name,
+                                url: remote_model.author.url,
+                                description: remote_model.author.description,
+                            }),
+                            like_count: remote_model.like_count,
+                            download_count: remote_model.download_count,
+                        };
+
+                        let download_file = crate::store::download_files::DownloadedFile {
+                            id: Arc::new(file_id.clone()),
+                            model_id: model_id.to_string(),
+                            name: file.to_string(),
+                            size: remote_file.size,
+                            quantization: remote_file.quantization,
+                            prompt_template: remote_model.prompt_template,
+                            reverse_prompt: remote_model.reverse_prompt,
+                            downloaded: false,
+                            file_size: 0,
+                            download_dir: self.models_dir.clone(),
+                            downloaded_at: Utc::now(),
+                            tags:remote_file.tags,
+                            featured: false,
+                            sha256: remote_file.sha256.unwrap_or_default(),
+                        };
+
+                        Ok((download_model,download_file))
+                    };
+
+                    match search_model_from_remote() {
+                        Ok((model, file)) => {
+                            let _ = self.download_tx.send((model, file, tx));
+                        }
+                        Err(e) => {
+                            let _ = tx.send(Err(e));
+                        }
+                    }
+                }
+
+                ModelManagementCommand::PauseDownload(file_id, tx) => {
+                    let _ = self.control_tx.send(DownloadControlCommand::Stop(file_id));
+                    let _ = tx.send(Ok(()));
+                }
+
+                ModelManagementCommand::CancelDownload(file_id, tx) => {
+                    let file_id_ = file_id.clone();
+                    let _ = self.control_tx.send(DownloadControlCommand::Stop(file_id_));
+
+                    {
+                        let conn = self.sql_conn.lock().unwrap();
+                        let _ = store::download_files::DownloadedFile::remove(&file_id, &conn);
+                    }
+                    let _ = store::remove_downloaded_file(self.models_dir.clone(), file_id);
+
+                    let _ = tx.send(Ok(()));
+                }
+
+                ModelManagementCommand::DeleteFile(file_id, tx) => {
+                    {
+                        let conn = self.sql_conn.lock().unwrap();
+                        let _ = store::download_files::DownloadedFile::remove(&file_id, &conn);
+                    }
+
+                    let _ = store::remove_downloaded_file(self.models_dir.clone(), file_id);
+                    let _ = tx.send(Ok(()));
+                }
+
+                ModelManagementCommand::GetDownloadedFiles(tx) => {
+                    let downloads = {
+                        let conn = self.sql_conn.lock().unwrap();
+                        store::get_all_download_file(&conn)
+                            .map_err(|e| anyhow::anyhow!("get download file error: {e}"))
+                    };
+
+                    let _ = tx.send(downloads);
+                }
+
+                ModelManagementCommand::GetCurrentDownloads(tx) => {
+                    let pending_downloads = {
+                        let conn = self.sql_conn.lock().unwrap();
+                        store::get_all_pending_downloads(&conn)
+                            .map_err(|e| anyhow::anyhow!("get pending download file error: {e}"))
+                    };
+                    let _ = tx.send(pending_downloads);
+                }
+            },
+            BuiltInCommand::Interaction(model_cmd) => match model_cmd {
+                ModelInteractionCommand::LoadModel(file_id, options, tx) => {
+                    let conn = self.sql_conn.lock().unwrap();
+                    let download_file =
+                        store::download_files::DownloadedFile::get_by_id(&conn, &file_id);
+
+                    match download_file {
+                        Ok(file) => {
+                            chat_ui::nn_preload_file(&file);
+                            let model = chat_ui::Model::new_by_downloaded_file(
+                                wasm_module.clone(),
+                                file,
+                                options,
+                                tx,
+                            );
+                            if let Some(old_model) = self.model.replace(model) {
+                                old_model.stop();
+                            }
+                        }
+                        Err(e) => {
+                            let _ = tx.send(Err(anyhow::anyhow!("Load model error: {e}")));
+                        }
+                    }
+                }
+                ModelInteractionCommand::EjectModel(tx) => {
+                    if let Some(model) = self.model.take() {
+                        model.stop();
+                    }
+                    let _ = tx.send(Ok(()));
+                }
+                ModelInteractionCommand::Chat(data, tx) => {
+                    if let Some(model) = &self.model {
+                        model.chat(data, tx);
+                    } else {
+                        let _ = tx.send(Err(anyhow::anyhow!("Model not loaded")));
+                    }
+                }
+                ModelInteractionCommand::StopChatCompletion(tx) => {
+                    self.model.as_ref().map(|model| model.stop_chat());
+                    let _ = tx.send(Ok(()));
+                }
+                ModelInteractionCommand::StartLocalServer(_, _) => todo!(),
+                ModelInteractionCommand::StopLocalServer(_) => todo!(),
+            },
+        }
+    }
+
+    fn run_loop(&mut self) {
+        static WASM: &[u8] = include_bytes!("../chat_ui.wasm");
+        let wasm_module = Module::from_bytes(None, WASM).unwrap();
+
+        loop {
+            if let Ok(cmd) = self.rx.recv() {
+                self.handle_command(&wasm_module, cmd.into());
+            } else {
+                break;
+            }
+        }
+
+        log::debug!("BackendImpl stop");
+    }
+}
