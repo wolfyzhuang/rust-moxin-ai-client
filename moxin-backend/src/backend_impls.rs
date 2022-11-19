@@ -685,3 +685,227 @@ fn test_chat_stop() {
     let (tx, rx) = std::sync::mpsc::channel();
     let cmd = Command::LoadModel(
         file.file.id.clone(),
+        LoadModelOptions {
+            prompt_template: None,
+            gpu_layers: moxin_protocol::protocol::GPULayers::Max,
+            use_mlock: false,
+            n_batch: 512,
+            n_ctx: 512,
+            rope_freq_scale: 0.0,
+            rope_freq_base: 0.0,
+            context_overflow_policy: moxin_protocol::protocol::ContextOverflowPolicy::StopAtLimit,
+        },
+        tx,
+    );
+    bk.send(cmd).unwrap();
+    let r = rx.recv();
+    assert!(r.is_ok());
+    assert!(r.unwrap().is_ok());
+
+    let (tx, rx) = std::sync::mpsc::channel();
+    let cmd = Command::Chat(
+        ChatRequestData {
+            messages: vec![Message {
+                content: "hello".to_string(),
+                role: Role::User,
+                name: None,
+            }],
+            model: "llama-2-7b-chat.Q5_K_M".to_string(),
+            frequency_penalty: None,
+            logprobs: None,
+            top_logprobs: None,
+            max_tokens: None,
+            presence_penalty: None,
+            seed: None,
+            stop: None,
+            stream: Some(true),
+            temperature: None,
+            top_p: None,
+            n: None,
+            logit_bias: None,
+        },
+        tx,
+    );
+    bk.send(cmd).unwrap();
+
+    let mut i = 0;
+    while let Ok(Ok(ChatResponse::ChatResponseChunk(data))) = rx.recv() {
+        i += 1;
+        println!(
+            "{:?} {:?}",
+            data.choices[0].delta, data.choices[0].finish_reason
+        );
+        if i == 5 {
+            let (tx, rx) = std::sync::mpsc::channel();
+            let cmd = Command::StopChatCompletion(tx);
+            bk.send(cmd).unwrap();
+            rx.recv().unwrap().unwrap();
+        }
+        if matches!(data.choices[0].finish_reason, Some(StopReason::Stop)) {
+            break;
+        }
+    }
+
+    let (tx, rx) = std::sync::mpsc::channel();
+
+    bk.send(Command::EjectModel(tx)).unwrap();
+    rx.recv().unwrap().unwrap();
+}
+
+#[test]
+fn test_download_file() {
+    let home = std::env::var("HOME").unwrap();
+    let bk = BackendImpl::build_command_sender(
+        format!("{home}/ai/models"),
+        format!("{home}/ai/models"),
+        3,
+    );
+
+    let (tx, rx) = std::sync::mpsc::channel();
+    let cmd = Command::SearchModels("llama".to_string(), tx);
+    bk.send(cmd).unwrap();
+    let models = rx.recv().unwrap();
+    assert!(models.is_ok());
+    let models = models.unwrap();
+    println!("{models:?}");
+
+    let file = models[0].files[0].clone();
+    println!("download {file:?}");
+
+    let (tx, rx) = std::sync::mpsc::channel();
+    let cmd = Command::DownloadFile(file.id, tx.clone());
+    bk.send(cmd).unwrap();
+
+    let file = models[0].files[1].clone();
+    println!("download {file:?}");
+
+    let cmd = Command::DownloadFile(file.id, tx);
+    bk.send(cmd).unwrap();
+
+    println!();
+
+    while let Ok(r) = rx.recv() {
+        match r {
+            Ok(FileDownloadResponse::Progress(file_id, progress)) => {
+                println!("{file_id} progress: {:.2}%", progress);
+            }
+            Ok(FileDownloadResponse::Completed(file)) => {
+                println!("Completed {file:?}");
+            }
+            Err(e) => {
+                eprintln!("{e}");
+                break;
+            }
+        }
+    }
+}
+
+#[test]
+fn test_get_download_file() {
+    let home = std::env::var("HOME").unwrap();
+    let bk = BackendImpl::build_command_sender(
+        format!("{home}/ai/models"),
+        format!("{home}/ai/models"),
+        3,
+    );
+
+    let (tx, rx) = std::sync::mpsc::channel();
+    let cmd = Command::GetDownloadedFiles(tx);
+    let _ = bk.send(cmd);
+
+    let files = rx.recv().unwrap();
+
+    println!("{files:?}");
+}
+
+#[derive(Debug, Clone)]
+pub enum DownloadControlCommand {
+    Stop(FileID),
+}
+
+pub struct BackendImpl {
+    sql_conn: Arc<Mutex<rusqlite::Connection>>,
+    #[allow(unused)]
+    home_dir: String,
+    models_dir: String,
+    pub rx: Receiver<Command>,
+    download_tx: tokio::sync::mpsc::UnboundedSender<(
+        store::models::Model,
+        store::download_files::DownloadedFile,
+        Sender<anyhow::Result<FileDownloadResponse>>,
+    )>,
+    model: Option<chat_ui::Model>,
+
+    #[allow(unused)]
+    async_rt: tokio::runtime::Runtime,
+    control_tx: tokio::sync::broadcast::Sender<DownloadControlCommand>,
+}
+
+impl BackendImpl {
+    /// # Argument
+    ///
+    /// * `home_dir` - The home directory of the application.
+    /// * `models_dir` - The download path of the model.
+    /// * `max_download_threads` - Maximum limit on simultaneous file downloads.
+    pub fn build_command_sender(
+        home_dir: String,
+        models_dir: String,
+        max_download_threads: usize,
+    ) -> Sender<Command> {
+        wasmedge_sdk::plugin::PluginManager::load(None).unwrap();
+
+        let sql_conn = rusqlite::Connection::open(format!("{home_dir}/data.sqlite")).unwrap();
+
+        // TODO Reorganize these bunch of functions, needs a little more of thought
+        let _ = store::models::create_table_models(&sql_conn).unwrap();
+        let _ = store::download_files::create_table_download_files(&sql_conn).unwrap();
+
+        let sql_conn = Arc::new(Mutex::new(sql_conn));
+
+        let (tx, rx) = std::sync::mpsc::channel();
+
+        let async_rt = tokio::runtime::Builder::new_multi_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        let (control_tx, _control_rx) = tokio::sync::broadcast::channel(100);
+        let (download_tx, download_rx) = tokio::sync::mpsc::unbounded_channel();
+
+        {
+            let client = reqwest::Client::new();
+            let downloader =
+                ModelFileDownloader::new(client, sql_conn.clone(), control_tx.clone(), 0.1);
+            async_rt.spawn(ModelFileDownloader::run_loop(
+                downloader,
+                max_download_threads.max(3),
+                download_rx,
+            ));
+        }
+
+        let mut backend = Self {
+            sql_conn,
+            home_dir,
+            models_dir,
+            rx,
+            download_tx,
+            model: None,
+            async_rt,
+            control_tx,
+        };
+
+        std::thread::spawn(move || {
+            backend.run_loop();
+        });
+        tx
+    }
+
+    fn handle_command(&mut self, wasm_module: &Module, built_in_cmd: BuiltInCommand) {
+        match built_in_cmd {
+            BuiltInCommand::Model(file) => match file {
+                ModelManagementCommand::GetFeaturedModels(tx) => {
+                    let res = store::RemoteModel::get_featured_model(100, 0);
+                    match res {
+                        Ok(remote_model) => {
+                            let sql_conn = self.sql_conn.lock().unwrap();
+                            let models = RemoteModel::to_model(&remote_model, &sql_conn)
+                                .map_err(|e| anyhow::anyhow!("get featured error: {e}"));
