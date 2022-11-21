@@ -130,3 +130,24 @@ pub fn get_all_pending_downloads(
         let pending_download = moxin_protocol::data::PendingDownload {
             file: result_file,
             model,
+            progress,
+            status: moxin_protocol::data::PendingDownloadsStatus::Paused,
+            //status: item.status.into(),
+        };
+
+        result.push(pending_download);
+    }
+
+    Ok(result)
+}
+
+pub fn remove_downloaded_file(models_dir: String, file_id: FileID) -> anyhow::Result<()> {
+    let (model_id, file) = file_id
+        .split_once("#")
+        .ok_or_else(|| anyhow::anyhow!("Illegal file_id"))?;
+
+    let filename = format!("{}/{}/{}", models_dir, model_id, file);
+
+    log::info!("Removing file {}", filename);
+    Ok(std::fs::remove_file(filename)?)
+}
