@@ -5,4 +5,8 @@ use rusqlite::params;
 
 pub use super::remote::Author;
 
-pub fn
+pub fn create_table_models(conn: &rusqlite::Connection) -> rusqlite::Result<()> {
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS models (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NUL
