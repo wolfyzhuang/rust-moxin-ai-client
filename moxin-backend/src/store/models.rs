@@ -15,4 +15,9 @@ pub fn create_table_models(conn: &rusqlite::Connection) -> rusqlite::Result<()> 
             requires TEXT NOT NULL,
             architecture TEXT NOT NULL,
             released_at TEXT NOT NULL,
-            prompt
+            prompt_template TEXT DEFAULT '',
+            reverse_prompt TEXT DEFAULT '',
+            author_name TEXT NOT NULL,
+            author_url TEXT NOT NULL,
+            author_description TEXT NOT NULL,
+            like_c
