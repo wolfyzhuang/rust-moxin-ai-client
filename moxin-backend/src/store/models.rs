@@ -20,4 +20,14 @@ pub fn create_table_models(conn: &rusqlite::Connection) -> rusqlite::Result<()> 
             author_name TEXT NOT NULL,
             author_url TEXT NOT NULL,
             author_description TEXT NOT NULL,
-            like_c
+            like_count INTEGER NOT NULL,
+            download_count INTEGER NOT NULL
+        )",
+        (),
+    )?;
+    Ok(())
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct Model {
+    pub id: Arc
