@@ -30,4 +30,11 @@ pub fn create_table_models(conn: &rusqlite::Connection) -> rusqlite::Result<()> 
 
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Model {
-    pub id: Arc
+    pub id: Arc<String>,
+    pub name: String,
+    pub summary: String,
+    pub size: String,
+    pub requires: String,
+    pub architecture: String,
+    pub released_at: DateTime<Utc>,
+    pub prompt_te
