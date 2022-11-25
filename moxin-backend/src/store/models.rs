@@ -37,4 +37,12 @@ pub struct Model {
     pub requires: String,
     pub architecture: String,
     pub released_at: DateTime<Utc>,
-    pub prompt_te
+    pub prompt_template: String,
+    pub reverse_prompt: String,
+    pub author: Arc<Author>,
+    pub like_count: u32,
+    pub download_count: u32,
+}
+
+impl Model {
+    pub fn save_to_db(&self, conn: &rusqlite::Conne
