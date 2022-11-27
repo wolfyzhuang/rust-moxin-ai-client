@@ -51,4 +51,11 @@ impl Model {
                 id, name, summary, size, requires, architecture, released_at, 
                 prompt_template, reverse_prompt, author_name, author_url, 
                 author_description, like_count, download_count)
-            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?1
+            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14)",
+            params![
+                self.id,
+                self.name,
+                self.summary,
+                self.size,
+                self.requires,
+                self.a
