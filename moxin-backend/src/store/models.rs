@@ -58,4 +58,9 @@ impl Model {
                 self.summary,
                 self.size,
                 self.requires,
-                self.a
+                self.architecture,
+                self.released_at.to_rfc3339(),
+                self.prompt_template,
+                self.reverse_prompt,
+                self.author.name,
+                self
