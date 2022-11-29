@@ -63,4 +63,13 @@ impl Model {
                 self.prompt_template,
                 self.reverse_prompt,
                 self.author.name,
-                self
+                self.author.url,
+                self.author.description,
+                self.like_count,
+                self.download_count
+            ],
+        )?;
+        Ok(())
+    }
+
+    pub fn get_all(conn: &r
