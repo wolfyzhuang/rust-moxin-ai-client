@@ -72,4 +72,7 @@ impl Model {
         Ok(())
     }
 
-    pub fn get_all(conn: &r
+    pub fn get_all(conn: &rusqlite::Connection) -> rusqlite::Result<HashMap<String, Model>> {
+        let mut stmt = conn.prepare("SELECT * FROM models")?;
+        let mut rows = stmt.query([])?;
+        let mut models = HashMap::new();
