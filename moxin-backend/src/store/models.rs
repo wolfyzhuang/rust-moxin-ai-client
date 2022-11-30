@@ -80,4 +80,9 @@ impl Model {
         while let Some(row) = rows.next()? {
             let released_at = chrono::DateTime::parse_from_rfc3339(&row.get::<_, String>(6)?)
                 .map(|s| s.to_utc())
-        
+                .unwrap_or_default();
+
+            let author = Arc::new(Author {
+                name: row.get(9)?,
+                url: row.get(10)?,
+                description: row.get(
