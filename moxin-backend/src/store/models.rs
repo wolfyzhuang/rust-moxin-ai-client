@@ -76,3 +76,8 @@ impl Model {
         let mut stmt = conn.prepare("SELECT * FROM models")?;
         let mut rows = stmt.query([])?;
         let mut models = HashMap::new();
+
+        while let Some(row) = rows.next()? {
+            let released_at = chrono::DateTime::parse_from_rfc3339(&row.get::<_, String>(6)?)
+                .map(|s| s.to_utc())
+        
