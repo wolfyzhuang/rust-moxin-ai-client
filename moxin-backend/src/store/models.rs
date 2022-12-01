@@ -85,4 +85,13 @@ impl Model {
             let author = Arc::new(Author {
                 name: row.get(9)?,
                 url: row.get(10)?,
-                description: row.get(
+                description: row.get(11)?,
+            });
+
+            let id = row.get::<_, String>(0)?;
+
+            models.insert(
+                id.clone(),
+                Model {
+                    id: Arc::new(id),
+                    
