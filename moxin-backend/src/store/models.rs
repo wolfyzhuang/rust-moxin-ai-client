@@ -94,4 +94,8 @@ impl Model {
                 id.clone(),
                 Model {
                     id: Arc::new(id),
-                    
+                    name: row.get(1)?,
+                    summary: row.get(2)?,
+                    size: row.get(3)?,
+                    requires: row.get(4)?,
+                    architecture: row.get(
