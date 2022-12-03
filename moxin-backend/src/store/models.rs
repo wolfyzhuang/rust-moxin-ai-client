@@ -98,4 +98,9 @@ impl Model {
                     summary: row.get(2)?,
                     size: row.get(3)?,
                     requires: row.get(4)?,
-                    architecture: row.get(
+                    architecture: row.get(5)?,
+                    released_at,
+                    prompt_template: row.get(7)?,
+                    reverse_prompt: row.get(8)?,
+                    author,
+                    like_cou
