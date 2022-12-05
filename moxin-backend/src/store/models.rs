@@ -103,4 +103,17 @@ impl Model {
                     prompt_template: row.get(7)?,
                     reverse_prompt: row.get(8)?,
                     author,
-                    like_cou
+                    like_count: row.get(12)?,
+                    download_count: row.get(13)?,
+                },
+            );
+        }
+
+        Ok(models)
+    }
+}
+
+#[test]
+
+fn test_sql() {
+    let _ = std::fs::remove_file("test_models.db
