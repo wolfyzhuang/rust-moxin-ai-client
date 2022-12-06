@@ -121,4 +121,11 @@ fn test_sql() {
     create_table_models(&conn).unwrap();
 
     let author = Arc::new(Author {
-        name: "author
+        name: "author1".to_string(),
+        url: "url1".to_string(),
+        description: "description1".to_string(),
+    });
+
+    let model = Model {
+        id: Arc::new("1".to_string()),
+        name: "model
