@@ -116,4 +116,9 @@ impl Model {
 #[test]
 
 fn test_sql() {
-    let _ = std::fs::remove_file("test_models.db
+    let _ = std::fs::remove_file("test_models.db");
+    let conn: rusqlite::Connection = rusqlite::Connection::open("test_models.db").unwrap();
+    create_table_models(&conn).unwrap();
+
+    let author = Arc::new(Author {
+        name: "author
