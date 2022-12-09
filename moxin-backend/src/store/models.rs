@@ -128,4 +128,9 @@ fn test_sql() {
 
     let model = Model {
         id: Arc::new("1".to_string()),
-        name: "model
+        name: "model1".to_string(),
+        summary: "summary1".to_string(),
+        size: "size1".to_string(),
+        requires: "requires1".to_string(),
+        architecture: "architecture1".to_string(),
+        released_at: Utc::
