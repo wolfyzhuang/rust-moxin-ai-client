@@ -133,4 +133,12 @@ fn test_sql() {
         size: "size1".to_string(),
         requires: "requires1".to_string(),
         architecture: "architecture1".to_string(),
-        released_at: Utc::
+        released_at: Utc::now(),
+        prompt_template: "prompt_template1".to_string(),
+        reverse_prompt: "reverse_prompt1".to_string(),
+        author,
+        like_count: 0,
+        download_count: 0,
+    };
+
+    model.save_to_db(&co
