@@ -141,4 +141,8 @@ fn test_sql() {
         download_count: 0,
     };
 
-    model.save_to_db(&co
+    model.save_to_db(&conn).unwrap();
+    let models = Model::get_all(&conn).unwrap();
+    assert_eq!(models.len(), 1);
+    assert_eq!(models[model.id.as_ref()], model);
+}
