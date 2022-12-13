@@ -10,4 +10,9 @@ pub enum PendingDownloadsStatus {
 }
 
 impl PendingDownloadsStatus {
-    pub fn to_st
+    pub fn to_string(&self) -> &str {
+        match self {
+            Self::Downloading => "downloading",
+            Self::Paused => "paused",
+            Self::Error => "error",
+        }
