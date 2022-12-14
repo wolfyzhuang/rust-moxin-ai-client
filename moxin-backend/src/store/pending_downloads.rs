@@ -16,3 +16,10 @@ impl PendingDownloadsStatus {
             Self::Paused => "paused",
             Self::Error => "error",
         }
+    }
+
+    pub fn from_string(s: &str) -> Self {
+        match s {
+            "downloading" => Self::Downloading,
+            "paused" => Self::Paused,
+            "error" => Self::
