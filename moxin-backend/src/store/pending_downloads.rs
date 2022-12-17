@@ -31,4 +31,9 @@ impl PendingDownloadsStatus {
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct PendingDownloads {
     pub file_id: Arc<String>,
-    pub prog
+    pub progress: f64,
+    pub status: PendingDownloadsStatus,
+}
+
+// TODO I'm not 100% convinced that this is the best way to handle this
+// I will attempt to merge PendingDownloads and
