@@ -22,4 +22,13 @@ impl PendingDownloadsStatus {
         match s {
             "downloading" => Self::Downloading,
             "paused" => Self::Paused,
-            "error" => Self::
+            "error" => Self::Error,
+            _ => Self::Downloading,
+        }
+    }
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct PendingDownloads {
+    pub file_id: Arc<String>,
+    pub prog
