@@ -40,4 +40,9 @@ pub struct PendingDownloads {
 // at least a single struct, to see if that makes more sense
 
 impl PendingDownloads {
-    pub fn insert_into_db(&self, conn: &rusqlite::Connection) -> rusq
+    pub fn insert_into_db(&self, conn: &rusqlite::Connection) -> rusqlite::Result<()> {
+        conn.execute(
+            "INSERT INTO pending_downloads (file_id) VALUES (?1)",
+            rusqlite::params![self.file_id],
+        )?;
+        Ok(()
