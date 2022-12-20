@@ -45,4 +45,11 @@ impl PendingDownloads {
             "INSERT INTO pending_downloads (file_id) VALUES (?1)",
             rusqlite::params![self.file_id],
         )?;
-        Ok(()
+        Ok(())
+    }
+
+    pub fn save_to_db(&self, conn: &rusqlite::Connection) -> rusqlite::Result<()> {
+        conn.execute(
+            "UPDATE pending_downloads
+            SET progress = ?2,
+                status = ?3
