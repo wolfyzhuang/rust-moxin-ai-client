@@ -59,4 +59,8 @@ impl PendingDownloads {
         Ok(())
     }
 
-    fn exists_by_id(conn: &rusqlite::Connectio
+    fn exists_by_id(conn: &rusqlite::Connection, id: String) -> rusqlite::Result<bool> {
+        conn.query_row(
+            "SELECT EXISTS (SELECT file_id FROM pending_downloads WHERE file_id = ?1)",
+            [id],
+            |row| row.get:
