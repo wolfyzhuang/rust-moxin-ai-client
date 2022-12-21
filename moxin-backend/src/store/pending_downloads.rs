@@ -53,3 +53,10 @@ impl PendingDownloads {
             "UPDATE pending_downloads
             SET progress = ?2,
                 status = ?3
+            WHERE file_id = ?1",
+            rusqlite::params![self.file_id, self.progress, self.status.to_string()],
+        )?;
+        Ok(())
+    }
+
+    fn exists_by_id(conn: &rusqlite::Connectio
