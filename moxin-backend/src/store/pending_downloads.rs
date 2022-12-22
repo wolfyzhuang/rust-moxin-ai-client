@@ -63,4 +63,13 @@ impl PendingDownloads {
         conn.query_row(
             "SELECT EXISTS (SELECT file_id FROM pending_downloads WHERE file_id = ?1)",
             [id],
-            |row| row.get:
+            |row| row.get::<_, bool>(0),
+        )
+    }
+
+    pub fn insert_if_not_exists(
+        file_id: Arc<String>,
+        conn: &rusqlite::Connection,
+    ) -> rusqlite::Result<()> {
+        if !Self::exists_by_id(conn, file_id.to_string())? {
+  
