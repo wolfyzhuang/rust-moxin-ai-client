@@ -72,4 +72,8 @@ impl PendingDownloads {
         conn: &rusqlite::Connection,
     ) -> rusqlite::Result<()> {
         if !Self::exists_by_id(conn, file_id.to_string())? {
-  
+            let pending_download = PendingDownloads {
+                file_id: file_id.into(),
+                ..Default::default()
+            };
+            pending_download.insert_into_db(conn)?;
