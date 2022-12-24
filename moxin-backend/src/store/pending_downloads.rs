@@ -77,3 +77,11 @@ impl PendingDownloads {
                 ..Default::default()
             };
             pending_download.insert_into_db(conn)?;
+        }
+
+        Ok(())
+    }
+
+    pub fn remove(file_id: Arc<String>, conn: &rusqlite::Connection) -> rusqlite::Result<()> {
+        conn.execute(
+            "DELETE FROM pending_downloads WHER
