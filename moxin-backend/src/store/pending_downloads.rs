@@ -84,4 +84,11 @@ impl PendingDownloads {
 
     pub fn remove(file_id: Arc<String>, conn: &rusqlite::Connection) -> rusqlite::Result<()> {
         conn.execute(
-            "DELETE FROM pending_downloads WHER
+            "DELETE FROM pending_downloads WHERE file_id = ?1",
+            rusqlite::params![file_id],
+        )?;
+        Ok(())
+    }
+
+    fn from_row(row: &Row<'_>) -> rusqlite::Result<Self> {
+        let status = PendingDownloadsStatus::from_s
