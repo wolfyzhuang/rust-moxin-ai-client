@@ -91,4 +91,9 @@ impl PendingDownloads {
     }
 
     fn from_row(row: &Row<'_>) -> rusqlite::Result<Self> {
-        let status = PendingDownloadsStatus::from_s
+        let status = PendingDownloadsStatus::from_string(row.get::<_, String>(2)?.as_str());
+
+        Ok(PendingDownloads {
+            file_id: Arc::new(row.get(0)?),
+            progress: row.get(1)?,
+            status: status,
