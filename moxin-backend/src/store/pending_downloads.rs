@@ -97,3 +97,9 @@ impl PendingDownloads {
             file_id: Arc::new(row.get(0)?),
             progress: row.get(1)?,
             status: status,
+        })
+    }
+
+    pub fn get_all(conn: &rusqlite::Connection) -> rusqlite::Result<Vec<Self>> {
+        let mut stmt = conn.prepare("SELECT * FROM pending_downloads")?;
+        let mut rows = stmt.query([
