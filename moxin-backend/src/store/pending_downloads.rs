@@ -102,4 +102,10 @@ impl PendingDownloads {
 
     pub fn get_all(conn: &rusqlite::Connection) -> rusqlite::Result<Vec<Self>> {
         let mut stmt = conn.prepare("SELECT * FROM pending_downloads")?;
-        let mut rows = stmt.query([
+        let mut rows = stmt.query([])?;
+        let mut downloads = vec![];
+
+        while let Some(row) = rows.next()? {
+            let item = Self::from_row(row)?;
+            downloads.push(item);
+      
