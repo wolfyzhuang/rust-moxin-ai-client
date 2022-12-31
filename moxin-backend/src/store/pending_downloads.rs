@@ -108,4 +108,13 @@ impl PendingDownloads {
         while let Some(row) = rows.next()? {
             let item = Self::from_row(row)?;
             downloads.push(item);
-      
+        }
+
+        Ok(downloads)
+    }
+}
+
+pub fn create_table_pending_downloads(conn: &rusqlite::Connection) -> rusqlite::Result<()> {
+    conn.execute_batch(
+        "BEGIN;
+       
