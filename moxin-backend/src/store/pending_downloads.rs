@@ -117,4 +117,9 @@ impl PendingDownloads {
 pub fn create_table_pending_downloads(conn: &rusqlite::Connection) -> rusqlite::Result<()> {
     conn.execute_batch(
         "BEGIN;
-       
+        CREATE TABLE IF NOT EXISTS pending_downloads (
+            file_id TEXT PRIMARY KEY,
+            progress REAL DEFAULT 0,
+            status TEXT DEFAULT 'downloading'
+        );
+        CREATE INDEX IF NO
