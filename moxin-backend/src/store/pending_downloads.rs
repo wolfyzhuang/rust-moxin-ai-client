@@ -122,4 +122,11 @@ pub fn create_table_pending_downloads(conn: &rusqlite::Connection) -> rusqlite::
             progress REAL DEFAULT 0,
             status TEXT DEFAULT 'downloading'
         );
-        CREATE INDEX IF NO
+        CREATE INDEX IF NOT EXISTS index_pending_downloads_file_id ON pending_downloads (file_id);
+        COMMIT;",
+    )?;
+
+    Ok(())
+}
+
+pub fn mark_pending_downloads_as_paused(conn: &rusqlite::Connect
