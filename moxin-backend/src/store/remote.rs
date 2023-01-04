@@ -6,4 +6,11 @@ use std::sync::mpsc::Sender;
 use std::sync::{Arc, Mutex};
 
 use chrono::{DateTime, Utc};
-use tokio::ti
+use tokio::time::timeout;
+use std::time::Duration;
+use moxin_protocol::data::Model;
+use moxin_protocol::protocol::FileDownloadResponse;
+
+use crate::backend_impls::DownloadControlCommand;
+
+#[derive(Debug
