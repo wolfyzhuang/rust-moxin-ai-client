@@ -13,4 +13,10 @@ use moxin_protocol::protocol::FileDownloadResponse;
 
 use crate::backend_impls::DownloadControlCommand;
 
-#[derive(Debug
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct RemoteFile {
+    pub name: String,
+    pub size: String,
+    pub quantization: String,
+    pub tags: Vec<String>,
+   
