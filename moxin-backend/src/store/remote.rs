@@ -25,4 +25,12 @@ pub struct RemoteFile {
 
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize, PartialEq, Eq)]
 pub struct Author {
-    pub name: S
+    pub name: String,
+    pub url: String,
+    pub description: String,
+}
+
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct RemoteModel {
+    pub id: String,
+  
