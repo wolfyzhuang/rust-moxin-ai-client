@@ -19,4 +19,10 @@ pub struct RemoteFile {
     pub size: String,
     pub quantization: String,
     pub tags: Vec<String>,
-   
+    #[serde(default)]
+    pub sha256: Option<String>,
+}
+
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize, PartialEq, Eq)]
+pub struct Author {
+    pub name: S
