@@ -33,4 +33,11 @@ pub struct Author {
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct RemoteModel {
     pub id: String,
+    pub name: String,
+    pub summary: String,
+    pub size: String,
+    pub requires: String,
+    pub architecture: String,
+    pub released_at: DateTime<Utc>,
+    pub files: Vec<RemoteFile>,
   
