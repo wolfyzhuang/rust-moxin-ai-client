@@ -40,4 +40,10 @@ pub struct RemoteModel {
     pub architecture: String,
     pub released_at: DateTime<Utc>,
     pub files: Vec<RemoteFile>,
-  
+    pub prompt_template: String,
+    pub reverse_prompt: String,
+    pub author: Author,
+    pub like_count: u32,
+    pub download_count: u32,
+    #[serde(default)]
+    pub metrics: Option<HashMap<St
