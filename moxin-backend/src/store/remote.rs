@@ -46,4 +46,9 @@ pub struct RemoteModel {
     pub like_count: u32,
     pub download_count: u32,
     #[serde(default)]
-    pub metrics: Option<HashMap<St
+    pub metrics: Option<HashMap<String, f32>>,
+}
+
+impl RemoteModel {
+    pub fn search(search_text: &str, limit: usize, offset: usize) -> reqwest::Result<Vec<Self>> {
+        let url = format!("https://co
