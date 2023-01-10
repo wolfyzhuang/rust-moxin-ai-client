@@ -51,4 +51,5 @@ pub struct RemoteModel {
 
 impl RemoteModel {
     pub fn search(search_text: &str, limit: usize, offset: usize) -> reqwest::Result<Vec<Self>> {
-        let url = format!("https://co
+        let url = format!("https://code.flows.network/webhook/DsbnEK45sK3NUzFUyZ9C/models?status=published&trace_status=tracing,renamed&model_type=instruct,chat&order=most_likes&offset={offset}&limit={limit}&search={search_text}");
+    
