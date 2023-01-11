@@ -57,4 +57,4 @@ impl RemoteModel {
     }
 
     pub fn get_featured_model(limit: usize, offset: usize) -> reqwest::Result<Vec<Self>> {
-  
+        let url = format!("https://code.flows.network/webhook/DsbnEK45sK3NUzFUyZ9C/models?status=published&trace_status=tracing,renamed&model_type=instruct,chat&order=most_likes&offset={offset}&limit={lim
