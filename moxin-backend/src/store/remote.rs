@@ -65,4 +65,9 @@ impl RemoteModel {
     pub fn to_model(
         remote_models: &[Self],
         conn: &rusqlite::Connection,
-    ) -> rusql
+    ) -> rusqlite::Result<Vec<moxin_protocol::data::Model>> {
+        let model_ids = remote_models
+            .iter()
+            .map(|m| m.id.clone())
+            .collect::<Vec<_>>();
+        let files = super::download_files::Downloade
