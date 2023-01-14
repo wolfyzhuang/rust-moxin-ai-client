@@ -70,4 +70,9 @@ impl RemoteModel {
             .iter()
             .map(|m| m.id.clone())
             .collect::<Vec<_>>();
-        let files = super::download_files::Downloade
+        let files = super::download_files::DownloadedFile::get_by_models(conn, &model_ids)?;
+
+        fn to_file(
+            model_id: &str,
+            remote_files: &[RemoteFile],
+            save_files: &HashMap<Arc<String>, super::downloa
