@@ -79,4 +79,6 @@ impl RemoteModel {
         ) -> rusqlite::Result<Vec<moxin_protocol::data::File>> {
             let mut files = vec![];
             for remote_f in remote_files {
-                l
+                let file_id = format!("{}#{}", model_id, remote_f.name);
+                let downloaded_path = save_files.get(&file_id).map(|file| {
+                    let file_path = Path::new(&file.download_dir
