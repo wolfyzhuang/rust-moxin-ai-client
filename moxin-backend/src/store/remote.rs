@@ -75,4 +75,8 @@ impl RemoteModel {
         fn to_file(
             model_id: &str,
             remote_files: &[RemoteFile],
-            save_files: &HashMap<Arc<String>, super::downloa
+            save_files: &HashMap<Arc<String>, super::download_files::DownloadedFile>,
+        ) -> rusqlite::Result<Vec<moxin_protocol::data::File>> {
+            let mut files = vec![];
+            for remote_f in remote_files {
+                l
