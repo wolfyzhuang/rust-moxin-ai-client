@@ -86,4 +86,10 @@ impl RemoteModel {
                         .join(&file.name);
                     file_path
                         .to_str()
-                        .map(|s| s.to_
+                        .map(|s| s.to_string())
+                        .unwrap_or_default()
+                });
+
+                let file = moxin_protocol::data::File {
+                    id: file_id,
+                    name: re
