@@ -81,4 +81,9 @@ impl RemoteModel {
             for remote_f in remote_files {
                 let file_id = format!("{}#{}", model_id, remote_f.name);
                 let downloaded_path = save_files.get(&file_id).map(|file| {
-                    let file_path = Path::new(&file.download_dir
+                    let file_path = Path::new(&file.download_dir)
+                        .join(&file.model_id)
+                        .join(&file.name);
+                    file_path
+                        .to_str()
+                        .map(|s| s.to_
