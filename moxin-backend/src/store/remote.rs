@@ -95,4 +95,13 @@ impl RemoteModel {
                     name: remote_f.name.clone(),
                     size: remote_f.size.clone(),
                     quantization: remote_f.quantization.clone(),
-                    downloaded: downloaded_path.is_some()
+                    downloaded: downloaded_path.is_some(),
+                    downloaded_path,
+                    tags: remote_f.tags.clone(),
+                    featured: false,
+                };
+
+                files.push(file);
+            }
+
+           
