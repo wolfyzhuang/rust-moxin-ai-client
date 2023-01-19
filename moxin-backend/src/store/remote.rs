@@ -92,4 +92,7 @@ impl RemoteModel {
 
                 let file = moxin_protocol::data::File {
                     id: file_id,
-                    name: re
+                    name: remote_f.name.clone(),
+                    size: remote_f.size.clone(),
+                    quantization: remote_f.quantization.clone(),
+                    downloaded: downloaded_path.is_some()
