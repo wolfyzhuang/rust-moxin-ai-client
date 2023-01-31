@@ -112,3 +112,8 @@ impl RemoteModel {
         for remote_m in remote_models {
             let model = Model {
                 id: remote_m.id.clone(),
+                name: remote_m.name.clone(),
+                summary: remote_m.summary.clone(),
+                size: remote_m.size.clone(),
+                requires: remote_m.requires.clone(),
+             
