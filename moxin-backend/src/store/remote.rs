@@ -104,4 +104,11 @@ impl RemoteModel {
                 files.push(file);
             }
 
-           
+            Ok(files)
+        }
+
+        let mut models = Vec::with_capacity(remote_models.len());
+
+        for remote_m in remote_models {
+            let model = Model {
+                id: remote_m.id.clone(),
