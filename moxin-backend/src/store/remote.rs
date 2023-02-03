@@ -119,4 +119,7 @@ impl RemoteModel {
                 architecture: remote_m.architecture.clone(),
                 released_at: remote_m.released_at.clone(),
                 files: to_file(&remote_m.id, &remote_m.files, &files)?,
-      
+                author: moxin_protocol::data::Author {
+                    name: remote_m.author.name.clone(),
+                    url: remote_m.author.url.clone(),
+                    d
