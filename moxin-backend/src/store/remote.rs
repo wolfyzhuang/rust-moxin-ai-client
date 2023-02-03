@@ -116,4 +116,7 @@ impl RemoteModel {
                 summary: remote_m.summary.clone(),
                 size: remote_m.size.clone(),
                 requires: remote_m.requires.clone(),
-             
+                architecture: remote_m.architecture.clone(),
+                released_at: remote_m.released_at.clone(),
+                files: to_file(&remote_m.id, &remote_m.files, &files)?,
+      
