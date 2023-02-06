@@ -125,4 +125,15 @@ impl RemoteModel {
                     description: remote_m.author.description.clone(),
                 },
                 like_count: remote_m.like_count.clone(),
-                download_count: remote_m.download_count.clone()
+                download_count: remote_m.download_count.clone(),
+                metrics: remote_m.metrics.clone().unwrap_or_default(),
+            };
+
+            models.push(model);
+        }
+
+        Ok(models)
+    }
+}
+
+async fn get_file_content_length(client: &reqwest::Cli
