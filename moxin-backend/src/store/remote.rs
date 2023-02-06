@@ -122,4 +122,7 @@ impl RemoteModel {
                 author: moxin_protocol::data::Author {
                     name: remote_m.author.name.clone(),
                     url: remote_m.author.url.clone(),
-                    d
+                    description: remote_m.author.description.clone(),
+                },
+                like_count: remote_m.like_count.clone(),
+                download_count: remote_m.download_count.clone()
