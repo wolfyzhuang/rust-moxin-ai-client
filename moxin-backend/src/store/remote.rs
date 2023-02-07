@@ -136,4 +136,10 @@ impl RemoteModel {
     }
 }
 
-async fn get_file_content_length(client: &reqwest::Cli
+async fn get_file_content_length(client: &reqwest::Client, url: &str) -> reqwest::Result<u64> {
+    let response = client.head(url).send().await?;
+
+    let content_length = response
+        .headers()
+        .get(reqwest::header::CONTENT_LENGTH)
+        .and_t
