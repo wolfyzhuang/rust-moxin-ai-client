@@ -142,4 +142,13 @@ async fn get_file_content_length(client: &reqwest::Client, url: &str) -> reqwest
     let content_length = response
         .headers()
         .get(reqwest::header::CONTENT_LENGTH)
-        .and_t
+        .and_then(|val| val.to_str().ok())
+        .and_then(|val| val.parse::<u64>().ok())
+        .unwrap_or(0);
+
+    Ok(content_length)
+}
+
+pub enum DownloadResult {
+    Completed(f64),
+    Sto
