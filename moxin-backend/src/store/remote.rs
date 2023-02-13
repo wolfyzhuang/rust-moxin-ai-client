@@ -151,4 +151,13 @@ async fn get_file_content_length(client: &reqwest::Client, url: &str) -> reqwest
 
 pub enum DownloadResult {
     Completed(f64),
-    Sto
+    Stopped(f64),
+}
+
+async fn download_file<P: AsRef<Path>>(
+    client: &reqwest::Client,
+    content_length: u64,
+    url: &str,
+    local_path: P,
+    step: f64,
+    report_fn: &mut (dyn FnMut(f64) -> anyhow
