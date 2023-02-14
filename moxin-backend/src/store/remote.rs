@@ -160,4 +160,9 @@ async fn download_file<P: AsRef<Path>>(
     url: &str,
     local_path: P,
     step: f64,
-    report_fn: &mut (dyn FnMut(f64) -> anyhow
+    report_fn: &mut (dyn FnMut(f64) -> anyhow::Result<()> + Send),
+) -> anyhow::Result<DownloadResult> {
+    use futures_util::stream::StreamExt;
+
+    let path: &Path = local_path.as_ref();
+    std::fs::create_dir_all(path.pare
