@@ -165,4 +165,11 @@ async fn download_file<P: AsRef<Path>>(
     use futures_util::stream::StreamExt;
 
     let path: &Path = local_path.as_ref();
-    std::fs::create_dir_all(path.pare
+    std::fs::create_dir_all(path.parent().unwrap())?;
+
+    let mut file = File::options().write(true).create(true).open(&local_path)?;
+
+    let file_length = file.metadata()?.len();
+
+    if file_length < content_length {
+        file.seek(io::SeekFrom::End(0))
