@@ -180,4 +180,12 @@ async fn download_file<P: AsRef<Path>>(
             .header("Range", range)
             .send()
             .await
-           
+            .map_err(|e| anyhow::anyhow!(e))?;
+
+        let mut downloaded: u64 = file_length;
+        let mut last_progress = 0.0;
+
+        let mut stream = resp.bytes_stream();
+
+        loop {
+            match 
