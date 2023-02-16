@@ -172,4 +172,12 @@ async fn download_file<P: AsRef<Path>>(
     let file_length = file.metadata()?.len();
 
     if file_length < content_length {
-        file.seek(io::SeekFrom::End(0))
+        file.seek(io::SeekFrom::End(0))?;
+
+        let range = format!("bytes={}-", file_length);
+        let resp = client
+            .get(url)
+            .header("Range", range)
+            .send()
+            .await
+           
