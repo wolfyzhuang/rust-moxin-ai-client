@@ -188,4 +188,7 @@ async fn download_file<P: AsRef<Path>>(
         let mut stream = resp.bytes_stream();
 
         loop {
-            match 
+            match timeout(Duration::from_secs(10), stream.next()).await? {
+                Some(chunk) => {
+                    let chunk = chunk.map_err(|e| anyhow::anyhow!(e))?;
+                    let len =
