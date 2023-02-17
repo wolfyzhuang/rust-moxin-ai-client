@@ -191,4 +191,9 @@ async fn download_file<P: AsRef<Path>>(
             match timeout(Duration::from_secs(10), stream.next()).await? {
                 Some(chunk) => {
                     let chunk = chunk.map_err(|e| anyhow::anyhow!(e))?;
-                    let len =
+                    let len = chunk.len();
+                    file.write_all(&chunk)?;
+                    downloaded += len as u64;
+
+                    let progress = (downloaded as f64 / content_length as f64) * 100.0;
+                    if pro
