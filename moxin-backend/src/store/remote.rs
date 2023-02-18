@@ -199,4 +199,12 @@ async fn download_file<P: AsRef<Path>>(
                     if progress > last_progress + step {
                         last_progress = progress;
                         match report_fn(progress) {
-                            Ok(_) => {
+                            Ok(_) => {}
+                            Err(_) => {}
+                        }
+                    }
+                },
+                None => {
+                    // Download is complete
+                    break;
+           
