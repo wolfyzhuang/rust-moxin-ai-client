@@ -196,4 +196,7 @@ async fn download_file<P: AsRef<Path>>(
                     downloaded += len as u64;
 
                     let progress = (downloaded as f64 / content_length as f64) * 100.0;
-                    if pro
+                    if progress > last_progress + step {
+                        last_progress = progress;
+                        match report_fn(progress) {
+                            Ok(_) => {
