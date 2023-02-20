@@ -207,4 +207,10 @@ async fn download_file<P: AsRef<Path>>(
                 None => {
                     // Download is complete
                     break;
-           
+                }
+            }
+        }
+
+        // TODO I don't know how to handle when it is complete but not 100%
+        // Maybe we should return Completed without any value?
+        Ok(D
