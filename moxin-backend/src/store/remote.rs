@@ -213,4 +213,12 @@ async fn download_file<P: AsRef<Path>>(
 
         // TODO I don't know how to handle when it is complete but not 100%
         // Maybe we should return Completed without any value?
-        Ok(D
+        Ok(DownloadResult::Completed(
+            (downloaded as f64 / content_length as f64) * 100.0,
+        ))
+    } else {
+        Ok(DownloadResult::Completed(100.0))
+    }
+}
+
+#[derive(Debu
