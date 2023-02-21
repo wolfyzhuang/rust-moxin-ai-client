@@ -221,4 +221,9 @@ async fn download_file<P: AsRef<Path>>(
     }
 }
 
-#[derive(Debu
+#[derive(Debug, Clone)]
+pub struct ModelFileDownloader {
+    client: reqwest::Client,
+    sql_conn: Arc<Mutex<rusqlite::Connection>>,
+    control_tx: tokio::sync::broadcast::Sender<DownloadControlCommand>,
+    step: f64,
