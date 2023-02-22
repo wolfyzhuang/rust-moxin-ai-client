@@ -233,4 +233,15 @@ impl ModelFileDownloader {
     pub fn new(
         client: reqwest::Client,
         sql_conn: Arc<Mutex<rusqlite::Connection>>,
-        control_tx: tokio::sync::broadcast::Sender<DownloadContr
+        control_tx: tokio::sync::broadcast::Sender<DownloadControlCommand>,
+        step: f64,
+    ) -> Self {
+        Self {
+            client,
+            sql_conn,
+            control_tx,
+            step,
+        }
+    }
+
+    fn get_dow
