@@ -244,4 +244,7 @@ impl ModelFileDownloader {
         }
     }
 
-    fn get_dow
+    fn get_download_url(&self, file: &super::download_files::DownloadedFile) -> String {
+        format!(
+            "https://huggingface.co/{}/resolve/main/{}",
+            file.model_id,
