@@ -247,4 +247,13 @@ impl ModelFileDownloader {
     fn get_download_url(&self, file: &super::download_files::DownloadedFile) -> String {
         format!(
             "https://huggingface.co/{}/resolve/main/{}",
-            file.model_id,
+            file.model_id, file.name
+        )
+    }
+
+    async fn download(
+        self,
+        file: super::download_files::DownloadedFile,
+        tx: Sender<anyhow::Result<FileDownloadResponse>>,
+    ) {
+        let file_id = file.id.to_
