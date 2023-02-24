@@ -256,4 +256,11 @@ impl ModelFileDownloader {
         file: super::download_files::DownloadedFile,
         tx: Sender<anyhow::Result<FileDownloadResponse>>,
     ) {
-        let file_id = file.id.to_
+        let file_id = file.id.to_string();
+
+        let mut send_progress = |progress| {
+            let r = tx.send(Ok(FileDownloadResponse::Progress(
+                file_id.clone(),
+                progress as f32,
+            )));
+      
