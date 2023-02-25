@@ -263,4 +263,12 @@ impl ModelFileDownloader {
                 file_id.clone(),
                 progress as f32,
             )));
-      
+            log::debug!("send progress {file_id} {progress} {r:?}");
+            Ok(())
+        };
+
+        let r = self
+            .download_file_from_remote(file, &mut send_progress)
+            .await;
+
+   
