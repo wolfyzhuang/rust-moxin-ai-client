@@ -271,4 +271,9 @@ impl ModelFileDownloader {
             .download_file_from_remote(file, &mut send_progress)
             .await;
 
-   
+        match r {
+            Ok(Some(response)) => {
+                let _ = tx.send(Ok(response));
+            }
+            Ok(None) => {
+                // TODO Implement file removal when download 
