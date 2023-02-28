@@ -276,4 +276,14 @@ impl ModelFileDownloader {
                 let _ = tx.send(Ok(response));
             }
             Ok(None) => {
-                // TODO Implement file removal when download 
+                // TODO Implement file removal when download is stopped, nothing to do when it is paused
+            }
+            Err(e) => {
+                let _ = tx.send(Err(e));
+            }
+        }
+    }
+
+    pub async fn run_loop(
+        downloader: Self,
+ 
