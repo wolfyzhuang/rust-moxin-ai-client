@@ -290,4 +290,10 @@ impl ModelFileDownloader {
         mut download_rx: tokio::sync::mpsc::UnboundedReceiver<(
             super::models::Model,
             super::download_files::DownloadedFile,
-            Sender<anyhow::Result<File
+            Sender<anyhow::Result<FileDownloadResponse>>,
+        )>,
+    ) {
+        let semaphore = Arc::new(tokio::sync::Semaphore::new(max_downloader));
+
+        while let Some((model, mut file, tx)) = download_rx.recv().await {
+            
