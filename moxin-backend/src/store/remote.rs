@@ -286,4 +286,8 @@ impl ModelFileDownloader {
 
     pub async fn run_loop(
         downloader: Self,
- 
+        max_downloader: usize,
+        mut download_rx: tokio::sync::mpsc::UnboundedReceiver<(
+            super::models::Model,
+            super::download_files::DownloadedFile,
+            Sender<anyhow::Result<File
