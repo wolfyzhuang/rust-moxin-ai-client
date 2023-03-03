@@ -296,4 +296,8 @@ impl ModelFileDownloader {
         let semaphore = Arc::new(tokio::sync::Semaphore::new(max_downloader));
 
         while let Some((model, mut file, tx)) = download_rx.recv().await {
-            
+            let url = downloader.get_download_url(&file);
+
+            let f = async {
+                let content_length = get_file_content_length(&downloader.client, &url)
+        
