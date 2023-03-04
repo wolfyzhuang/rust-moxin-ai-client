@@ -300,4 +300,9 @@ impl ModelFileDownloader {
 
             let f = async {
                 let content_length = get_file_content_length(&downloader.client, &url)
-        
+                    .await
+                    .map_err(|e| anyhow::anyhow!(e))?;
+
+                {
+                    file.file_size = content_length;
+                    let conn = downloader.sql_conn.lock().
