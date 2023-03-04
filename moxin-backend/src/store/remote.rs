@@ -305,4 +305,7 @@ impl ModelFileDownloader {
 
                 {
                     file.file_size = content_length;
-                    let conn = downloader.sql_conn.lock().
+                    let conn = downloader.sql_conn.lock().unwrap();
+                    // insert a pending download
+                    file.insert_into_db(&conn).map_err(|e| anyhow::anyhow!(e))?;
+                    model.save_to_db(&conn).map_err(|e|
