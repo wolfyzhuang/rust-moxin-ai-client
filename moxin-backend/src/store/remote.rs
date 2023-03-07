@@ -308,4 +308,13 @@ impl ModelFileDownloader {
                     let conn = downloader.sql_conn.lock().unwrap();
                     // insert a pending download
                     file.insert_into_db(&conn).map_err(|e| anyhow::anyhow!(e))?;
-                    model.save_to_db(&conn).map_err(|e|
+                    model.save_to_db(&conn).map_err(|e| anyhow::anyhow!(e))?;
+                }
+
+                Ok(())
+            };
+
+            let r: anyhow::Result<()> = f.await;
+
+            if let Err(e) = r {
+     
