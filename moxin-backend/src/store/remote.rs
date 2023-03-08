@@ -317,4 +317,10 @@ impl ModelFileDownloader {
             let r: anyhow::Result<()> = f.await;
 
             if let Err(e) = r {
-     
+                let _ = tx.send(Err(e));
+                continue;
+            }
+
+            let downloader_ = downloader.clone();
+            let semaphore_ = semaphore.clone();
+            tokio:
