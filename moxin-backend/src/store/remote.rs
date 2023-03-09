@@ -323,4 +323,12 @@ impl ModelFileDownloader {
 
             let downloader_ = downloader.clone();
             let semaphore_ = semaphore.clone();
-            tokio:
+            tokio::spawn(async move {
+                let permit = semaphore_.acquire_owned().await.unwrap();
+                downloader_.download(file, tx).await;
+                drop(permit);
+            });
+        }
+    }
+
+   
