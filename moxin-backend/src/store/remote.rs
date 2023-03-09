@@ -331,4 +331,8 @@ impl ModelFileDownloader {
         }
     }
 
-   
+    async fn download_file_from_remote(
+        &self,
+        mut file: super::download_files::DownloadedFile,
+        report_fn: &mut (dyn FnMut(f64) -> anyhow::Result<()> + Send),
+    ) -> anyhow::Result<O
