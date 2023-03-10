@@ -342,4 +342,9 @@ impl ModelFileDownloader {
             .join(&file.model_id)
             .join(&file.name);
 
-    
+        let file_id_ = file.id.as_ref().clone();
+        let mut control_rx = self.control_tx.subscribe();
+
+        let listen_control_cmd = async {
+            loop {
+                let cmd = c
