@@ -335,4 +335,11 @@ impl ModelFileDownloader {
         &self,
         mut file: super::download_files::DownloadedFile,
         report_fn: &mut (dyn FnMut(f64) -> anyhow::Result<()> + Send),
-    ) -> anyhow::Result<O
+    ) -> anyhow::Result<Option<FileDownloadResponse>> {
+        let url = self.get_download_url(&file);
+
+        let local_path = Path::new(&file.download_dir)
+            .join(&file.model_id)
+            .join(&file.name);
+
+    
