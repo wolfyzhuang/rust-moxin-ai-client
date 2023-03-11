@@ -351,4 +351,14 @@ impl ModelFileDownloader {
                 if let Ok(DownloadControlCommand::Stop(file_id)) = cmd {
                     if file_id == file_id_ {
                         return DownloadResult::Stopped(0.0);
-    
+                    }
+                }
+            }
+        };
+
+        let r = tokio::select! {
+            r = download_file(
+                &self.client,
+                file.file_size,
+                &url,
+   
