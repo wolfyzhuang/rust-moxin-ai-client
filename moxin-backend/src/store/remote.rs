@@ -347,4 +347,8 @@ impl ModelFileDownloader {
 
         let listen_control_cmd = async {
             loop {
-                let cmd = c
+                let cmd = control_rx.recv().await;
+                if let Ok(DownloadControlCommand::Stop(file_id)) = cmd {
+                    if file_id == file_id_ {
+                        return DownloadResult::Stopped(0.0);
+    
