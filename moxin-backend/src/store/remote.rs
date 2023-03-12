@@ -361,4 +361,11 @@ impl ModelFileDownloader {
                 &self.client,
                 file.file_size,
                 &url,
-   
+                &local_path,
+                self.step,
+                report_fn,
+            ) => r?,
+            r = listen_control_cmd => {
+                r
+            }
+    
