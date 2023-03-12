@@ -368,4 +368,10 @@ impl ModelFileDownloader {
             r = listen_control_cmd => {
                 r
             }
-    
+        };
+
+        match r {
+            DownloadResult::Completed(_) => {
+                {
+                    let conn = self.sql_conn.lock().unwrap();
+                    file.mark_down
