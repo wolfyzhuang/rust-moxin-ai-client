@@ -374,4 +374,9 @@ impl ModelFileDownloader {
             DownloadResult::Completed(_) => {
                 {
                     let conn = self.sql_conn.lock().unwrap();
-                    file.mark_down
+                    file.mark_downloads();
+                    let _ = file.update_downloaded(&conn);
+                }
+
+                Ok(Some(FileDownloadResponse::Completed(
+                    moxin_proto
