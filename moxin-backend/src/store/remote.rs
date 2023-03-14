@@ -379,4 +379,8 @@ impl ModelFileDownloader {
                 }
 
                 Ok(Some(FileDownloadResponse::Completed(
-                    moxin_proto
+                    moxin_protocol::data::DownloadedFile {
+                        file: moxin_protocol::data::File {
+                            id: file.id.as_ref().clone(),
+                            name: file.name.clone(),
+      
