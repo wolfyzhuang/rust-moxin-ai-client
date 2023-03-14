@@ -383,4 +383,7 @@ impl ModelFileDownloader {
                         file: moxin_protocol::data::File {
                             id: file.id.as_ref().clone(),
                             name: file.name.clone(),
-      
+                            size: file.size.clone(),
+                            quantization: file.quantization.clone(),
+                            downloaded: true,
+                            
