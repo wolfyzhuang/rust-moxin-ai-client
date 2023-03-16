@@ -386,4 +386,8 @@ impl ModelFileDownloader {
                             size: file.size.clone(),
                             quantization: file.quantization.clone(),
                             downloaded: true,
-                            
+                            downloaded_path: Some(
+                                local_path
+                                    .to_str()
+                                    .map(|s| s.to_string())
+                     
