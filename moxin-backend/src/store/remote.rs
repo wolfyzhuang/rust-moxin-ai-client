@@ -394,4 +394,8 @@ impl ModelFileDownloader {
                             ),
                             tags: file.tags,
                             featured: false,
-       
+                        },
+                        model: Model::default(),
+                        downloaded_at: file.downloaded_at,
+                        compatibility_guess:
+                            moxin_pr
