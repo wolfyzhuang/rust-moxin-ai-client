@@ -398,4 +398,9 @@ impl ModelFileDownloader {
                         model: Model::default(),
                         downloaded_at: file.downloaded_at,
                         compatibility_guess:
-                            moxin_pr
+                            moxin_protocol::data::CompatibilityGuess::PossiblySupported,
+                        information: String::new(),
+                    },
+                )))
+            }
+            D
