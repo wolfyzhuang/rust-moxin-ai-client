@@ -403,4 +403,13 @@ impl ModelFileDownloader {
                     },
                 )))
             }
-            D
+            DownloadResult::Stopped(_) => Ok(None),
+        }
+    }
+}
+
+#[test]
+fn test_search() {
+    let models = RemoteModel::search("llama", 100, 0).unwrap();
+    println!("{:?}", models);
+}
