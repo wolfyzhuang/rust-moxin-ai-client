@@ -6,4 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-moxin-protocol = { path = "../moxi
+moxin-protocol = { path = "../moxin-protocol" }
+
+moxin-backend = { path = "../moxin-backend" }
+moxin-fake-backend = { path = "./moxin-fake-backend", package="moxin-fake-backend" }
+
+makepad-widgets = { git = "https://github.com/makepad/ma
