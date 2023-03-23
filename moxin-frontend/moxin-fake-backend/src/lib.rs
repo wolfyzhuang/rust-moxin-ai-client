@@ -37,3 +37,11 @@ impl Backend {
                             tx.send(Ok(filtered)).unwrap();
                         }
                         _ => {}
+                    }
+                }
+            }
+        });
+
+        Backend { command_sender }
+    }
+}
