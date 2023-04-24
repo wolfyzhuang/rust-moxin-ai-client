@@ -2,4 +2,5 @@
 <mask id="mask0_698_4111" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
 <rect width="20" height="20" fill="#D9D9D9"/>
 </mask>
-<g mask="url(
+<g mask="url(#mask0_698_4111)">
+<path d="M4.16667 15.8333H5.35417L13.5 7.6875L12.3125 6.5L4.16667 14.6458V15.8333ZM2.5 17.5V13.9583L13.5 2.97917C13.6667 2.82639 13.8507 2.70833 14.0521 2.625C14.2535 2.
