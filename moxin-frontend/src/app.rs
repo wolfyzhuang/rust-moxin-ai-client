@@ -224,3 +224,90 @@ impl MatchEvent for App {
             }
 
             match action.as_widget_action().cast() {
+                DownloadAction::Play(file_id) => {
+                    self.store.download_file(file_id);
+                    self.ui.redraw(cx);
+                }
+                DownloadAction::Pause(file_id) => {
+                    self.store.pause_download_file(file_id);
+                    self.ui.redraw(cx);
+                }
+                DownloadAction::Cancel(file_id) => {
+                    self.store.cancel_download_file(file_id);
+                    self.ui.redraw(cx);
+                }
+                _ => {}
+            }
+
+            // Set modal viewall model id
+            if let ViewAllModalAction::ModelSelected(model_id) = action.as_widget_action().cast() {
+                let mut modal = self
+                    .ui
+                    .model_card_view_all_modal(id!(model_card_view_all_modal));
+                modal.set_model_id(model_id);
+                // TODO: Hack for error that when you first open the modal, doesnt draw until an event
+                // this forces the entire ui to rerender, still weird that only happens the first time.
+                self.ui.redraw(cx);
+            }
+
+            // Set modal viewall model id
+            if let DeleteModelAction::FileSelected(file_id) = action.as_widget_action().cast() {
+                let mut modal = self.ui.delete_model_modal(id!(delete_model_modal));
+                modal.set_file_id(file_id);
+                // TODO: Hack for error that when you first open the modal, doesnt draw until an event
+                // this forces the entire ui to rerender, still weird that only happens the first time.
+                self.ui.redraw(cx);
+            }
+
+            if let ModelInfoAction::FileSelected(file_id) = action.as_widget_action().cast() {
+                let mut modal = self.ui.model_info_modal(id!(model_info_modal));
+                modal.set_file_id(file_id);
+                // TODO: Hack for error that when you first open the modal, doesnt draw until an event
+                // this forces the entire ui to rerender, still weird that only happens the first time.
+                self.ui.redraw(cx);
+            }
+
+            if let ChatAction::Start(_) = action.as_widget_action().cast() {
+                let chat_radio_button = self.ui.radio_button(id!(chat_tab));
+                chat_radio_button.select(cx, &mut Scope::empty());
+            }
+
+            if let PopupAction::NavigateToMyModels = action.as_widget_action().cast() {
+                let my_models_radio_button = self.ui.radio_button(id!(my_models_tab));
+                my_models_radio_button.select(cx, &mut Scope::empty());
+            }
+
+            if let ChatPanelAction::NavigateToDiscover = action.as_widget_action().cast() {
+                let discover_radio_button = self.ui.radio_button(id!(discover_tab));
+                discover_radio_button.select(cx, &mut Scope::empty());
+            }
+
+            if let ChatAction::Resume(_) = action.as_widget_action().cast() {
+                let chat_radio_button = self.ui.radio_button(id!(chat_tab));
+                chat_radio_button.select(cx, &mut Scope::empty());
+            }
+        }
+    }
+}
+
+impl App {
+    fn notify_downloaded_files(&mut self, cx: &mut Cx) {
+        if let Some(notification) = self.store.next_download_notification() {
+            let mut popup = self
+                .ui
+                .download_notification_popup(id!(popup_download_success));
+
+            match notification {
+                DownloadPendingNotification::DownloadedFile(file) => {
+                    popup.set_data(&file, DownloadResult::Success);
+                }
+                DownloadPendingNotification::DownloadErrored(file) => {
+                    popup.set_data(&file, DownloadResult::Failure);
+                }
+            }
+
+            let mut modal = self.ui.modal(id!(modal_root));
+            let _ = modal.show_modal_view_by_id(cx, live_id!(popup_download_success_modal_view));
+        }
+    }
+}
