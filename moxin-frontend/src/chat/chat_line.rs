@@ -260,3 +260,186 @@ live_design! {
                         draw_icon: { svg_file: (ICON_EDIT) }
                     }
                     delete_button = <ChatLineActionButton> {
+                        draw_icon: { svg_file: (ICON_DELETE) }
+                    }
+                }
+            }
+        }
+
+    }
+}
+
+#[derive(Clone, DefaultNone, Debug)]
+pub enum ChatLineAction {
+    Delete(usize),
+    Edit(usize, String, bool),
+    None,
+}
+
+#[derive(Clone, Debug, Default, PartialEq)]
+pub enum ChatLineState {
+    #[default]
+    Editable,
+    NotEditable,
+    OnEdit,
+}
+
+#[derive(Live, LiveHook, Widget)]
+pub struct ChatLine {
+    #[deref]
+    view: View,
+
+    #[rust]
+    message_id: usize,
+
+    #[rust]
+    edition_state: ChatLineState,
+
+    #[rust]
+    hovered: bool,
+}
+
+impl Widget for ChatLine {
+    fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+        self.view.handle_event(cx, event, scope);
+        self.widget_match_event(cx, event, scope);
+
+        // Current Makepad's processing of the hover events is not enough
+        // in our case because it collapes the hover state of the
+        // children widgets (specially, the text input widget). So, we rely
+        // on this basic mouse over calculation to show the actions buttons.
+        if matches!(self.edition_state, ChatLineState::Editable) {
+            if let Event::MouseMove(e) = event {
+                let hovered = self.view.area().rect(cx).contains(e.abs);
+                if self.hovered != hovered {
+                    self.hovered = hovered;
+                    self.view(id!(actions_section.actions)).set_visible(hovered);
+                    self.redraw(cx);
+                }
+            }
+        }
+    }
+
+    fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
+        self.view.draw_walk(cx, scope, walk)
+    }
+}
+
+impl WidgetMatchEvent for ChatLine {
+    fn handle_actions(&mut self, cx: &mut Cx, actions: &Actions, scope: &mut Scope) {
+        match self.edition_state {
+            ChatLineState::Editable => self.handle_editable_actions(cx, actions, scope),
+            ChatLineState::OnEdit => self.handle_on_edit_actions(cx, actions, scope),
+            ChatLineState::NotEditable => {}
+        }
+    }
+}
+
+impl ChatLine {
+    pub fn set_edit_mode(&mut self, cx: &mut Cx, enabled: bool) {
+        self.edition_state = if enabled {
+            ChatLineState::OnEdit
+        } else {
+            ChatLineState::Editable
+        };
+
+        self.view(id!(actions_section.actions)).set_visible(false);
+        self.view(id!(edit_buttons)).set_visible(enabled);
+        self.view(id!(input_container)).set_visible(enabled);
+        self.show_or_hide_message_label(cx, !enabled);
+
+        self.redraw(cx);
+    }
+
+    pub fn show_or_hide_message_label(&mut self, cx: &mut Cx, show: bool) {
+        let text = self.text_input(id!(input)).text();
+        let to_markdown = parse_markdown(&text);
+        let is_plain_text = to_markdown.nodes.len() <= 3;
+
+        self.view(id!(plain_text_message_container))
+            .set_visible(show && is_plain_text);
+        self.view(id!(markdown_message_container))
+            .set_visible(show && !is_plain_text);
+
+        self.redraw(cx);
+    }
+
+    pub fn handle_editable_actions(&mut self, cx: &mut Cx, actions: &Actions, scope: &mut Scope) {
+        if self.button(id!(delete_button)).clicked(&actions) {
+            let widget_id = self.view.widget_uid();
+            cx.widget_action(
+                widget_id,
+                &scope.path,
+                ChatLineAction::Delete(self.message_id),
+            );
+        }
+
+        if self.button(id!(edit_button)).clicked(&actions) {
+            self.set_edit_mode(cx, true);
+        }
+
+        if self.button(id!(copy_button)).clicked(&actions) {
+            let text_to_copy = self.text_input(id!(input)).text();
+            cx.copy_to_clipboard(&text_to_copy);
+        }
+    }
+
+    pub fn handle_on_edit_actions(&mut self, cx: &mut Cx, actions: &Actions, scope: &mut Scope) {
+        if let Some(fe) = self.view(id!(save)).finger_up(&actions) {
+            if fe.was_tap() {
+                let updated_message = self.text_input(id!(input)).text();
+
+                // Do not allow to have empty messages for now.
+                // TODO We should disable Save button when the message is empty.
+                if !updated_message.trim().is_empty() {
+                    let widget_id = self.view.widget_uid();
+                    cx.widget_action(
+                        widget_id,
+                        &scope.path,
+                        ChatLineAction::Edit(self.message_id, updated_message, false),
+                    );
+                }
+
+                self.set_edit_mode(cx, false);
+            }
+        }
+
+        if let Some(fe) = self.view(id!(save_and_regenerate)).finger_up(&actions) {
+            if fe.was_tap() {
+                let updated_message = self.text_input(id!(input)).text();
+
+                // TODO We should disable Save and Regenerate button when the message is empty.
+                if !updated_message.trim().is_empty() {
+                    let widget_id = self.view.widget_uid();
+                    cx.widget_action(
+                        widget_id,
+                        &scope.path,
+                        ChatLineAction::Edit(self.message_id, updated_message, true),
+                    );
+                }
+
+                self.set_edit_mode(cx, false);
+            }
+        }
+
+        if let Some(fe) = self.view(id!(cancel)).finger_up(&actions) {
+            if fe.was_tap() {
+                self.set_edit_mode(cx, false);
+            }
+        }
+    }
+}
+
+impl ChatLineRef {
+    pub fn set_role(&mut self, text: &str) {
+        let Some(mut inner) = self.borrow_mut() else {
+            return;
+        };
+        inner.label(id!(role)).set_text(text);
+    }
+
+    pub fn set_avatar_text(&mut self, text: &str) {
+        let Some(mut inner) = self.borrow_mut() else {
+            return;
+        };
+        inner.label(id!(avatar_label)).set_text(text);
