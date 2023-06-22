@@ -443,3 +443,63 @@ impl ChatLineRef {
             return;
         };
         inner.label(id!(avatar_label)).set_text(text);
+    }
+
+    pub fn set_message_text(&mut self, cx: &mut Cx, text: &str) {
+        let Some(mut inner) = self.borrow_mut() else {
+            return;
+        };
+
+        match inner.edition_state {
+            ChatLineState::Editable | ChatLineState::NotEditable => {
+                inner.text_input(id!(input)).set_text(text.trim());
+                inner.label(id!(plain_text_message)).set_text(text.trim());
+                inner.markdown(id!(markdown_message)).set_text(text.trim());
+
+                // We know only AI assistant messages could be empty, so it is never
+                // displayed in user's chat lines.
+                let show_loading = text.trim().is_empty();
+                inner.view(id!(loading_container)).set_visible(show_loading);
+
+                let mut loading_widget = inner.chat_line_loading(id!(loading_container.loading));
+                if show_loading {
+                    loading_widget.animate(cx);
+                } else {
+                    loading_widget.stop_animation();
+                }
+
+                inner.show_or_hide_message_label(cx, true);
+            }
+            ChatLineState::OnEdit => {}
+        }
+    }
+
+    pub fn set_message_id(&mut self, message_id: usize) {
+        let Some(mut inner) = self.borrow_mut() else {
+            return;
+        };
+        inner.message_id = message_id;
+    }
+
+    pub fn set_actions_enabled(&mut self, _cx: &mut Cx, enabled: bool) {
+        let Some(mut inner) = self.borrow_mut() else {
+            return;
+        };
+
+        if enabled {
+            if inner.edition_state == ChatLineState::NotEditable {
+                inner.edition_state = ChatLineState::Editable;
+            }
+        } else {
+            inner.edition_state = ChatLineState::NotEditable;
+            inner.view(id!(actions_section.actions)).set_visible(false);
+        }
+    }
+
+    pub fn set_regenerate_enabled(&mut self, enabled: bool) {
+        let Some(mut inner) = self.borrow_mut() else {
+            return;
+        };
+        inner.view(id!(save_and_regenerate)).set_visible(enabled);
+    }
+}
