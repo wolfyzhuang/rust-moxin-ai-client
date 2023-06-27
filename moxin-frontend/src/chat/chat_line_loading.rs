@@ -19,4 +19,11 @@ live_design! {
             instance dither: 0.3
 
             fn get_color(self) -> vec4 {
-      
+                return mix(
+                    #F3FFA2,
+                    #E3FBFF,
+                    self.pos.x + self.dither
+                )
+            }
+
+            fn p
