@@ -9,4 +9,14 @@ live_design! {
     import crate::shared::widgets::*;
     import crate::landing::model_card::ModelCard;
 
-    ANIMATION_SPEED 
+    ANIMATION_SPEED = 0.33
+
+    Bar = <View> {
+        width: Fill,
+        height: 16,
+        show_bg: true,
+        draw_bg: {
+            instance dither: 0.3
+
+            fn get_color(self) -> vec4 {
+      
