@@ -36,4 +36,13 @@ live_design! {
         width: Fill,
         height: Fit,
 
-        f
+        flow: Down,
+        spacing: 4,
+
+        line1 = <Bar> {}
+        line2 = <Bar> {}
+        <View> {
+            width: Fill,
+            height: 16,
+            line3 = <Bar> {}
+            <VerticalFiller
