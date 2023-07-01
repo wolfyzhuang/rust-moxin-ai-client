@@ -26,4 +26,14 @@ live_design! {
                 )
             }
 
-            fn p
+            fn pixel(self) -> vec4 {
+                return Pal::premul(self.get_color())
+            }
+        }
+    }
+
+    ChatLineLoading = {{ChatLineLoading}} {
+        width: Fill,
+        height: Fit,
+
+        f
