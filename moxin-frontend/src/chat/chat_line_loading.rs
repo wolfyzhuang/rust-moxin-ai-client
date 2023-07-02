@@ -45,4 +45,12 @@ live_design! {
             width: Fill,
             height: 16,
             line3 = <Bar> {}
-            <VerticalFiller
+            <VerticalFiller> {}
+        }
+
+        animator: {
+            line1 = {
+                default: start,
+                start = {
+                    redraw: true,
+                    from: {all: Forward {duration: (ANIMATION_SP
