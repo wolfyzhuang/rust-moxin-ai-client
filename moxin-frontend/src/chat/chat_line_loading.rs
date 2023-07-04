@@ -70,4 +70,9 @@ live_design! {
                     from: {all: Forward {duration: (ANIMATION_SPEED)}}
                     apply: {line2 = { draw_bg: {dither: 0.1} }}
                 }
-                run
+                run = {
+                    redraw: true,
+                    from: {all: Forward {duration: (ANIMATION_SPEED)}}
+                    apply: {line2 = { draw_bg: {dither: 0.9} }}
+                }
+          
