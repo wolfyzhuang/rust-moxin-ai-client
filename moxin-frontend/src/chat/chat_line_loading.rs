@@ -65,4 +65,9 @@ live_design! {
 
             line2 = {
                 default: start,
-               
+                start = {
+                    redraw: true,
+                    from: {all: Forward {duration: (ANIMATION_SPEED)}}
+                    apply: {line2 = { draw_bg: {dither: 0.1} }}
+                }
+                run
