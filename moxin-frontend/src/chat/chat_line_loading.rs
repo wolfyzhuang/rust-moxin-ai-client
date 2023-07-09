@@ -86,4 +86,13 @@ live_design! {
                 }
                 run = {
                     redraw: true,
-                    from:
+                    from: {all: Forward {duration: (ANIMATION_SPEED)}}
+                    apply: {line3 = { draw_bg: {dither: 0.9} }}
+                }
+            }
+        }
+    }
+}
+
+#[derive(Live, LiveHook, Widget)]
+pub struct ChatLineLoa
