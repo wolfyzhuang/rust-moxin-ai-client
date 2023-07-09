@@ -95,4 +95,19 @@ live_design! {
 }
 
 #[derive(Live, LiveHook, Widget)]
-pub struct ChatLineLoa
+pub struct ChatLineLoading {
+    #[deref]
+    view: View,
+
+    #[animator]
+    animator: Animator,
+
+    #[rust]
+    timer: Timer,
+
+    #[rust]
+    current_animated_bar: usize,
+}
+
+impl Widget for ChatLineLoading {
+    fn handle_event(&mut s
