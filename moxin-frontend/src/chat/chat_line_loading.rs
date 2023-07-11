@@ -110,4 +110,9 @@ pub struct ChatLineLoading {
 }
 
 impl Widget for ChatLineLoading {
-    fn handle_event(&mut s
+    fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+        if self.timer.is_event(event).is_some() {
+            self.update_animation(cx);
+        }
+        if self.animator_handle_event(cx, event).must_redraw() {
+        
