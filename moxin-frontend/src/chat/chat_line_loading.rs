@@ -115,4 +115,11 @@ impl Widget for ChatLineLoading {
             self.update_animation(cx);
         }
         if self.animator_handle_event(cx, event).must_redraw() {
-        
+            self.redraw(cx);
+        }
+
+        self.view.handle_event(cx, event, scope);
+    }
+
+    fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
+  
