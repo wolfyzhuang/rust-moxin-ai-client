@@ -122,4 +122,10 @@ impl Widget for ChatLineLoading {
     }
 
     fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
-  
+        self.view.draw_walk(cx, scope, walk)
+    }
+}
+
+impl ChatLineLoading {
+    pub fn update_animation(&mut self, cx: &mut Cx) {
+        self.current_animated_bar = (self.current_animated_bar + 1
