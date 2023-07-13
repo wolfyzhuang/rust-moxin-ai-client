@@ -128,4 +128,10 @@ impl Widget for ChatLineLoading {
 
 impl ChatLineLoading {
     pub fn update_animation(&mut self, cx: &mut Cx) {
-        self.current_animated_bar = (self.current_animated_bar + 1
+        self.current_animated_bar = (self.current_animated_bar + 1) % 3;
+
+        match self.current_animated_bar {
+            0 => {
+                self.animator_play(cx, id!(line1.run));
+                self.animator_play(cx, id!(line3.start));
+  
