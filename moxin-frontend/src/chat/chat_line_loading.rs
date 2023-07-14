@@ -134,4 +134,9 @@ impl ChatLineLoading {
             0 => {
                 self.animator_play(cx, id!(line1.run));
                 self.animator_play(cx, id!(line3.start));
-  
+            }
+            1 => {
+                self.animator_play(cx, id!(line1.start));
+                self.animator_play(cx, id!(line2.run));
+            }
+            2 => {
