@@ -140,3 +140,8 @@ impl ChatLineLoading {
                 self.animator_play(cx, id!(line2.run));
             }
             2 => {
+                self.animator_play(cx, id!(line2.start));
+                self.animator_play(cx, id!(line3.run));
+            }
+            _ => unreachable!(),
+   
