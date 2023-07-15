@@ -144,4 +144,12 @@ impl ChatLineLoading {
                 self.animator_play(cx, id!(line3.run));
             }
             _ => unreachable!(),
-   
+        };
+
+        self.timer = cx.start_timeout(0.33);
+    }
+}
+
+impl ChatLineLoadingRef {
+    pub fn animate(&mut self, cx: &mut Cx) {
+        let Some(mut inner) = self.borrow_mut()
