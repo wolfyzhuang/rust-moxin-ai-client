@@ -152,4 +152,13 @@ impl ChatLineLoading {
 
 impl ChatLineLoadingRef {
     pub fn animate(&mut self, cx: &mut Cx) {
-        let Some(mut inner) = self.borrow_mut()
+        let Some(mut inner) = self.borrow_mut() else {
+            return;
+        };
+        if inner.timer.is_empty() {
+            inner.timer = cx.start_timeout(0.2);
+        }
+    }
+
+    pub fn stop_animation(&mut self) {
+       
