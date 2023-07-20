@@ -259,3 +259,199 @@ live_design! {
                 width: Fill,
                 height: Fill,
                 flow: Down,
+                spacing: 30,
+                align: {x: 0.5, y: 0.5},
+
+                <Icon> {
+                    draw_icon: {
+                        svg_file: dep("crate://self/resources/icons/chat.svg"),
+                        color: #D0D5DD
+                    }
+                    icon_walk: {width: 128, height: 128}
+                }
+
+                <Label> {
+                    draw_text: {
+                        text_style: <REGULAR_FONT>{font_size: 14},
+                        color: #667085
+                    }
+                    text: "Start chatting by choosing a model from above"
+                }
+            }
+
+            <View> {
+                width: Fill, height: Fit
+                flow: Down,
+                align: {x: 0.5, y: 0.5},
+                no_model_prompt_input = <ChatPromptInput> {}
+            }
+
+        }
+
+        empty_conversation = <View> {
+            visible: false,
+
+            width: Fill,
+            height: Fill,
+
+            flow: Down,
+            spacing: 30,
+            align: {x: 0.5, y: 0.5},
+
+            <ChatAgentAvatar> {}
+            <Label> {
+                draw_text: {
+                    text_style: <REGULAR_FONT>{font_size: 14},
+                    color: #101828
+                }
+                text: "How can I help you?"
+            }
+        }
+
+        main = <View> {
+            visible: false
+
+            width: Fill,
+            height: Fill,
+
+            margin: { top: 86 }
+            spacing: 4,
+            flow: Down,
+
+            <View> {
+                width: Fill,
+                height: Fill,
+
+                flow: Overlay
+                chat = <PortalList> {
+                    width: Fill,
+                    height: Fill,
+
+                    drag_scrolling: false,
+                    auto_tail: true,
+
+                    UserChatLine = <UserChatLine> {}
+                    ModelChatLine = <ModelChatLine> {}
+                }
+
+                <JumpToButtom> {}
+            }
+
+            main_prompt_input = <ChatPromptInput> {}
+        }
+
+        model_selector = <ModelSelector> {}
+    }
+}
+
+#[derive(PartialEq)]
+enum ChatPanelState {
+    Unload {
+        downloaded_model_empty: bool,
+    },
+    Idle,
+    Streaming {
+        auto_scroll_pending: bool,
+        auto_scroll_cancellable: bool,
+    },
+}
+
+impl Default for ChatPanelState {
+    fn default() -> ChatPanelState {
+        ChatPanelState::Unload {
+            downloaded_model_empty: true,
+        }
+    }
+}
+
+#[derive(Live, LiveHook, Widget)]
+pub struct ChatPanel {
+    #[deref]
+    view: View,
+
+    #[rust]
+    state: ChatPanelState,
+}
+
+impl Widget for ChatPanel {
+    fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+        self.view.handle_event(cx, event, scope);
+        self.widget_match_event(cx, event, scope);
+
+        if let Event::Signal = event {
+            let store = scope.data.get_mut::<Store>().unwrap();
+
+            match self.state {
+                ChatPanelState::Streaming {
+                    auto_scroll_pending,
+                    auto_scroll_cancellable: _,
+                } => {
+                    self.state = ChatPanelState::Streaming {
+                        auto_scroll_pending,
+                        auto_scroll_cancellable: true,
+                    };
+
+                    let still_streaming = store.get_current_chat().unwrap().borrow().is_streaming;
+                    if still_streaming {
+                        if auto_scroll_pending {
+                            self.scroll_messages_to_bottom(cx);
+                        }
+                    } else {
+                        // Scroll to the bottom when streaming is done
+                        self.scroll_messages_to_bottom(cx);
+                        self.state = ChatPanelState::Idle;
+                    }
+
+                    self.update_prompt_input(cx);
+
+                    // Redraw because we expect to see new or updated chat entries
+                    self.redraw(cx);
+                }
+                ChatPanelState::Unload {
+                    downloaded_model_empty: _,
+                } => self.unload_model(cx, store),
+                _ => {}
+            }
+        }
+    }
+
+    fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
+        let store = scope.data.get_mut::<Store>().unwrap();
+
+        // TODO: Rename "chat_history", "chat_count", etc, they are messages of a chat
+        // can be confused with the actual Chat type.
+        let (chat_history, model_filename, initial_letter) =
+            store
+                .get_current_chat()
+                .map_or((vec![], "".to_string(), "".to_string()), |chat| {
+                    let model_filename = chat.borrow().model_filename.clone();
+                    let initial_letter = model_filename
+                        .chars()
+                        .next()
+                        .unwrap_or_default()
+                        .to_uppercase()
+                        .to_string();
+                    (
+                        chat.borrow().messages.clone(),
+                        model_filename,
+                        initial_letter,
+                    )
+                });
+
+        let chats_count = chat_history.len();
+
+        let chat_is_empty = chats_count == 0;
+        let empty_conversation_view = self.view(id!(empty_conversation));
+        empty_conversation_view.set_visible(chat_is_empty);
+        if chat_is_empty {
+            empty_conversation_view
+                .label(id!(avatar_label))
+                .set_text(initial_letter.as_str());
+        }
+
+        while let Some(view_item) = self.view.draw_walk(cx, scope, walk).step() {
+            if let Some(mut list) = view_item.as_portal_list().borrow_mut() {
+                list.set_item_range(cx, 0, chats_count);
+                while let Some(item_id) = list.next_visible_item(cx) {
+                    if item_id < chats_count {
+                        let chat_line_data = &chat_history[item_id];
