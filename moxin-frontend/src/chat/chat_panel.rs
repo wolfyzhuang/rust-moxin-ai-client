@@ -653,3 +653,186 @@ impl ChatPanel {
                 self.enable_or_disable_prompt_input(cx);
                 self.show_prompt_input_send_icon(cx);
             }
+            ChatPanelState::Streaming {
+                auto_scroll_pending: _,
+                auto_scroll_cancellable: _,
+            } => {
+                let prompt_input = self.text_input(id!(main_prompt_input.prompt));
+                prompt_input.apply_over(
+                    cx,
+                    live! {
+                        draw_text: { prompt_enabled: 0.0 }
+                    },
+                );
+                self.show_prompt_input_stop_icon(cx);
+            }
+            ChatPanelState::Unload {
+                downloaded_model_empty: _,
+            } => {}
+        }
+    }
+
+    fn enable_or_disable_prompt_input(&mut self, cx: &mut Cx) {
+        let prompt_input = self.text_input(id!(main_prompt_input.prompt));
+        let enable = if !prompt_input.text().is_empty() {
+            1.0
+        } else {
+            0.0
+        };
+
+        prompt_input.apply_over(
+            cx,
+            live! {
+                draw_text: { prompt_enabled: (enable) }
+            },
+        );
+    }
+
+    fn show_prompt_input_send_icon(&mut self, cx: &mut Cx) {
+        self.view(id!(main_prompt_input.prompt_icon)).apply_over(
+            cx,
+            live! {
+                icon_send = { visible: true }
+                icon_stop = { visible: false }
+            },
+        );
+        let prompt_input = self.text_input(id!(main_prompt_input.prompt));
+        if !prompt_input.text().is_empty() {
+            self.enable_prompt_input_icon(cx);
+        } else {
+            self.disable_prompt_input_icon(cx);
+        }
+    }
+
+    fn show_prompt_input_stop_icon(&mut self, cx: &mut Cx) {
+        self.view(id!(main_prompt_input.prompt_icon)).apply_over(
+            cx,
+            live! {
+                icon_send = { visible: false }
+                icon_stop = { visible: true }
+            },
+        );
+        self.enable_prompt_input_icon(cx);
+    }
+
+    fn enable_prompt_input_icon(&mut self, cx: &mut Cx) {
+        let enabled_color = vec3(0.0, 0.0, 0.0);
+        self.view(id!(main_prompt_input.prompt_icon)).apply_over(
+            cx,
+            live! {
+                draw_bg: {
+                    color: (enabled_color)
+                }
+            },
+        );
+    }
+
+    fn disable_prompt_input_icon(&mut self, cx: &mut Cx) {
+        let disabled_color = vec3(0.816, 0.835, 0.867); // #D0D5DD
+        self.view(id!(main_prompt_input.prompt_icon)).apply_over(
+            cx,
+            live! {
+                draw_bg: {
+                    color: (disabled_color)
+                }
+            },
+        );
+    }
+
+    fn scroll_messages_to_bottom(&mut self, cx: &mut Cx) {
+        let mut list = self.portal_list(id!(chat));
+        list.smooth_scroll_to_end(cx, 10, 80.0);
+    }
+
+    fn load_model(&mut self, store: &mut Store, downloaded_file: DownloadedFile) {
+        self.state = ChatPanelState::Idle;
+        self.view(id!(main)).set_visible(true);
+        self.view(id!(empty_conversation)).set_visible(true);
+        self.view(id!(no_model)).set_visible(false);
+        self.view(id!(no_downloaded_model)).set_visible(false);
+
+        store.load_model(&downloaded_file.file);
+    }
+
+    fn unload_model(&mut self, cx: &mut Cx, store: &mut Store) {
+        let downloaded_model_empty = store.downloaded_files.is_empty();
+        self.state = ChatPanelState::Unload {
+            downloaded_model_empty,
+        };
+
+        self.view(id!(main)).set_visible(false);
+        self.view(id!(empty_conversation)).set_visible(false);
+
+        match self.state {
+            ChatPanelState::Unload {
+                downloaded_model_empty: true,
+            } => {
+                self.view(id!(no_downloaded_model)).set_visible(true);
+                self.view(id!(no_model)).set_visible(false);
+            }
+            ChatPanelState::Unload {
+                downloaded_model_empty: false,
+            } => {
+                self.view(id!(no_model)).set_visible(true);
+                self.view(id!(no_downloaded_model)).set_visible(false)
+            }
+            _ => {}
+        }
+
+        self.model_selector(id!(model_selector)).deselect(cx);
+        self.view.redraw(cx);
+    }
+
+    fn handle_prompt_input_actions(&mut self, cx: &mut Cx, actions: &Actions, scope: &mut Scope) {
+        let prompt_input = self.text_input(id!(main_prompt_input.prompt));
+
+        if let Some(_text) = prompt_input.changed(actions) {
+            self.update_prompt_input(cx);
+        }
+
+        if let Some(fe) = self
+            .view(id!(main_prompt_input.prompt_icon))
+            .finger_up(&actions)
+        {
+            if fe.was_tap() {
+                self.send_message(cx, scope, prompt_input.text());
+            }
+        }
+
+        if let Some(prompt) = prompt_input.returned(actions) {
+            self.send_message(cx, scope, prompt);
+        }
+    }
+
+    fn send_message(&mut self, cx: &mut Cx, scope: &mut Scope, prompt: String) {
+        if prompt.trim().is_empty() {
+            return;
+        }
+
+        self.show_prompt_input_stop_icon(cx);
+        let store = scope.data.get_mut::<Store>().unwrap();
+        store.send_chat_message(prompt.clone());
+
+        let prompt_input = self.text_input(id!(main_prompt_input.prompt));
+        prompt_input.set_text_and_redraw(cx, "");
+        prompt_input.set_cursor(0, 0);
+        self.update_prompt_input(cx);
+
+        self.view(id!(empty_conversation)).set_visible(false);
+
+        // Scroll to the bottom when the message is sent
+        self.scroll_messages_to_bottom(cx);
+
+        self.state = ChatPanelState::Streaming {
+            auto_scroll_pending: true,
+            auto_scroll_cancellable: false,
+        };
+    }
+}
+
+#[derive(Clone, DefaultNone, Debug)]
+pub enum ChatPanelAction {
+    UnloadIfActive(FileID),
+    NavigateToDiscover,
+    None,
+}
