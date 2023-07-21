@@ -455,3 +455,201 @@ impl Widget for ChatPanel {
                 while let Some(item_id) = list.next_visible_item(cx) {
                     if item_id < chats_count {
                         let chat_line_data = &chat_history[item_id];
+
+                        let item;
+                        let mut chat_line_item;
+                        if chat_line_data.is_assistant() {
+                            item = list.item(cx, item_id, live_id!(ModelChatLine)).unwrap();
+                            chat_line_item = item.as_chat_line();
+                            chat_line_item.set_role(&model_filename);
+                            chat_line_item.set_regenerate_enabled(false);
+                            chat_line_item.set_avatar_text(&initial_letter);
+                        } else {
+                            item = list.item(cx, item_id, live_id!(UserChatLine)).unwrap();
+                            chat_line_item = item.as_chat_line();
+                            chat_line_item.set_role("You");
+                            chat_line_item.set_regenerate_enabled(true);
+                        };
+
+                        chat_line_item.set_message_text(cx, &chat_line_data.content);
+                        chat_line_item.set_message_id(chat_line_data.id);
+
+                        // Disable actions for the last chat line when model is streaming
+                        if matches!(self.state, ChatPanelState::Streaming { .. })
+                            && item_id == chats_count - 1
+                        {
+                            chat_line_item.set_actions_enabled(cx, false);
+                        } else {
+                            chat_line_item.set_actions_enabled(cx, true);
+                        }
+
+                        item.draw_all(cx, &mut Scope::empty());
+                    }
+                }
+            }
+        }
+
+        DrawStep::done()
+    }
+}
+
+impl WidgetMatchEvent for ChatPanel {
+    fn handle_actions(&mut self, cx: &mut Cx, actions: &Actions, scope: &mut Scope) {
+        let widget_uid = self.widget_uid();
+
+        for action in actions {
+            if let ChatHistoryAction::ChatSelected(_) = action.as_widget_action().cast() {
+                self.view(id!(empty_conversation)).set_visible(false);
+                self.redraw(cx);
+            }
+
+            match action.as_widget_action().cast() {
+                ModelSelectorAction::Selected(downloaded_file) => {
+                    let store = scope.data.get_mut::<Store>().unwrap();
+                    self.load_model(store, downloaded_file);
+                }
+                _ => {}
+            }
+
+            match action.as_widget_action().cast() {
+                ChatAction::Start(file_id) => {
+                    let store = scope.data.get_mut::<Store>().unwrap();
+                    let downloaded_file = store
+                        .downloaded_files
+                        .iter()
+                        .find(|file| file.file.id == file_id)
+                        .expect("Attempted to start chat with a no longer existing file")
+                        .clone();
+                    self.load_model(store, downloaded_file);
+                }
+                _ => {}
+            }
+
+            match action.as_widget_action().cast() {
+                ChatLineAction::Delete(id) => {
+                    let store = scope.data.get_mut::<Store>().unwrap();
+                    store.delete_chat_message(id);
+                    self.redraw(cx);
+                }
+                ChatLineAction::Edit(id, updated, regenerate) => {
+                    let store = scope.data.get_mut::<Store>().unwrap();
+                    store.edit_chat_message(id, updated, regenerate);
+
+                    if regenerate {
+                        self.state = ChatPanelState::Streaming {
+                            auto_scroll_pending: true,
+                            auto_scroll_cancellable: false,
+                        };
+
+                        self.show_prompt_input_stop_icon(cx);
+
+                        let prompt_input = self.text_input(id!(main_prompt_input.prompt));
+                        prompt_input.set_text_and_redraw(cx, "");
+                        prompt_input.set_cursor(0, 0);
+                        self.update_prompt_input(cx);
+                    }
+                    self.redraw(cx);
+                }
+                _ => {}
+            }
+
+            match action.as_widget_action().cast() {
+                ChatPanelAction::UnloadIfActive(file_id) => {
+                    let store = scope.data.get_mut::<Store>().unwrap();
+                    if store
+                        .get_current_chat()
+                        .map_or(false, |chat| chat.borrow().file_id == file_id)
+                    {
+                        self.unload_model(cx, store);
+                        store.eject_model().expect("Failed to eject model");
+                    }
+                }
+                _ => {}
+            }
+        }
+
+        self.jump_to_bottom_actions(cx, actions, scope);
+
+        match self.state {
+            ChatPanelState::Idle => {
+                self.handle_prompt_input_actions(cx, actions, scope);
+            }
+            ChatPanelState::Streaming {
+                auto_scroll_pending: _,
+                auto_scroll_cancellable,
+            } => {
+                let list = self.portal_list(id!(chat));
+                if auto_scroll_cancellable && list.scrolled(actions) {
+                    // Cancel auto-scrolling if the user scrolls up
+                    self.state = ChatPanelState::Streaming {
+                        auto_scroll_pending: false,
+                        auto_scroll_cancellable,
+                    };
+                }
+
+                if let Some(fe) = self
+                    .view(id!(main_prompt_input.prompt_icon))
+                    .finger_up(actions)
+                {
+                    if fe.was_tap() {
+                        let store = scope.data.get_mut::<Store>().unwrap();
+                        store.cancel_chat_streaming();
+                    }
+                }
+            }
+            _ => {}
+        }
+
+        if let Some(fe) = self
+            .view(id!(no_downloaded_model.go_to_discover_button))
+            .finger_up(actions)
+        {
+            if fe.was_tap() {
+                cx.widget_action(widget_uid, &scope.path, ChatPanelAction::NavigateToDiscover);
+            }
+        }
+    }
+}
+
+impl ChatPanel {
+    fn jump_to_bottom_actions(&mut self, cx: &mut Cx, actions: &Actions, scope: &mut Scope) {
+        if let Some(fe) = self.view(id!(jump_to_bottom)).finger_up(actions) {
+            if fe.was_tap() {
+                self.scroll_messages_to_bottom(cx);
+                self.redraw(cx);
+            }
+        }
+
+        let jump_to_bottom = self.view(id!(jump_to_bottom));
+        match self.state {
+            ChatPanelState::Streaming {
+                auto_scroll_pending: true,
+                ..
+            } => {
+                // We avoid to show this button when the list is auto-scrolling upon
+                // receiving a new message. Otherwise, the button flicks.
+                jump_to_bottom.set_visible(false);
+            }
+            ChatPanelState::Idle | ChatPanelState::Streaming { .. } => {
+                let store = scope.data.get_mut::<Store>().unwrap();
+                let has_messages = store
+                    .get_current_chat()
+                    .map_or(false, |chat| !chat.borrow().messages.is_empty());
+
+                let list = self.portal_list(id!(chat));
+                jump_to_bottom.set_visible(has_messages && list.further_items_bellow_exist());
+            }
+            ChatPanelState::Unload {
+                downloaded_model_empty: _,
+            } => {
+                jump_to_bottom.set_visible(false);
+            }
+        }
+    }
+
+    fn update_prompt_input(&mut self, cx: &mut Cx) {
+        match self.state {
+            ChatPanelState::Idle => {
+                self.enable_or_disable_prompt_input(cx);
+                self.show_prompt_input_send_icon(cx);
+            }
