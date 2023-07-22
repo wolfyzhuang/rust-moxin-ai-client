@@ -22,4 +22,16 @@ live_design! {
         }
 
         chat_panel = <ChatPanel> {
-       
+            width: Fill,
+            height: Fill,
+        }
+
+        <View> {
+            width: 200,
+            height: Fill,
+        }
+    }
+}
+
+#[derive(Live, LiveHook, Widget)]
+pub struct Chat
