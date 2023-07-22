@@ -11,4 +11,15 @@ live_design! {
     ChatScreen = {{ChatScreen}} {
         width: Fill,
         height: Fill,
-        margin: {top: 48, right: 48, bo
+        margin: {top: 48, right: 48, bottom: 48, left: 20},
+        spacing: 50,
+
+        <View> {
+            width: 270,
+            height: Fill,
+
+            chat_history = <ChatHistory> {}
+        }
+
+        chat_panel = <ChatPanel> {
+       
