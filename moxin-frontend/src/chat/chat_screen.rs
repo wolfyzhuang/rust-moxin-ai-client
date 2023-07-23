@@ -34,4 +34,11 @@ live_design! {
 }
 
 #[derive(Live, LiveHook, Widget)]
-pub struct Chat
+pub struct ChatScreen {
+    #[deref]
+    view: View,
+}
+
+impl Widget for ChatScreen {
+    fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+        self.view.handle_event(cx, event, scope
