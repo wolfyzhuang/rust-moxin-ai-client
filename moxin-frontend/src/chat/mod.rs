@@ -9,4 +9,10 @@ pub mod model_selector_list;
 
 use makepad_widgets::Cx;
 
-pub fn live_design(cx: &mut 
+pub fn live_design(cx: &mut Cx) {
+    chat_history::live_design(cx);
+    chat_line_loading::live_design(cx);
+    chat_line::live_design(cx);
+    chat_panel::live_design(cx);
+    chat_screen::live_design(cx);
+    model_info::live_d
