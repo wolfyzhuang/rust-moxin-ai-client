@@ -15,4 +15,7 @@ pub fn live_design(cx: &mut Cx) {
     chat_line::live_design(cx);
     chat_panel::live_design(cx);
     chat_screen::live_design(cx);
-    model_info::live_d
+    model_info::live_design(cx);
+    model_selector_list::live_design(cx);
+    model_selector::live_design(cx);
+}
