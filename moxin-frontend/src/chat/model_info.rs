@@ -11,4 +11,12 @@ live_design!{
         height: Fit,
         padding: {top: 6, bottom: 6, left: 10, right: 10}
 
-       
+        spacing: 5,
+        draw_bg: {
+            radius: 2.0,
+        }
+
+        caption = <Label> {
+            draw_text: {
+                text_style: <REGULAR_FONT>{font_size: 9},
+  
