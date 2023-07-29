@@ -19,4 +19,14 @@ live_design!{
         caption = <Label> {
             draw_text: {
                 text_style: <REGULAR_FONT>{font_size: 9},
-  
+                color: #1D2939
+            }
+        }
+    }
+
+    ModelInfo = <View> {
+        width: Fill,
+        height: Fit,
+        padding: 16,
+        spacing: 10,
+        align:
