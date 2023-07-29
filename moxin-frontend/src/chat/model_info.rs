@@ -29,4 +29,11 @@ live_design!{
         height: Fit,
         padding: 16,
         spacing: 10,
-        align:
+        align: {x: 0.0, y: 0.5},
+
+        show_bg: true,
+        draw_bg: {
+            instance hover: 0.0,
+            instance down: 0.0,
+            color: #fff,
+            instance color_hover:
