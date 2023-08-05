@@ -54,3 +54,12 @@ live_design!{
             draw_bg: {
                 color: #DDD7FF,
             }
+        }
+
+        params_size_tag = <ModelAttributeTag> {
+            draw_bg: {
+                color: #D1F4FC,
+            }
+        }
+
+        file_size_tag = <ModelAttr
