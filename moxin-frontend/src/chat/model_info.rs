@@ -36,4 +36,13 @@ live_design!{
             instance hover: 0.0,
             instance down: 0.0,
             color: #fff,
-            instance color_hover:
+            instance color_hover: #F9FAFB,
+
+            fn pixel(self) -> vec4 {
+                return mix(self.color, self.color_hover, self.hover);
+            }
+        }
+
+        label = <Label> {
+            draw_text:{
+                text_s
