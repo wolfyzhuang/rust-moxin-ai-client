@@ -45,4 +45,12 @@ live_design!{
 
         label = <Label> {
             draw_text:{
-                text_s
+                text_style: <REGULAR_FONT>{font_size: 11},
+                color: #000
+            }
+        }
+
+        architecture_tag = <ModelAttributeTag> {
+            draw_bg: {
+                color: #DDD7FF,
+            }
