@@ -70,4 +70,9 @@ live_design!{
             }
             draw_bg: {
                 color: #fff,
-                border
+                border_color: #B4B4B4,
+                border_width: 1.0,
+            }
+        }
+    }
+}
