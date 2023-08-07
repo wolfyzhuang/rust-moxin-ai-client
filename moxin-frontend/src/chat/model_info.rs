@@ -62,4 +62,12 @@ live_design!{
             }
         }
 
-        file_size_tag = <ModelAttr
+        file_size_tag = <ModelAttributeTag> {
+            caption = {
+                draw_text:{
+                    color: #000
+                }
+            }
+            draw_bg: {
+                color: #fff,
+                border
