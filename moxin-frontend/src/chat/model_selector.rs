@@ -298,3 +298,17 @@ impl ModelSelector {
         self.view(id!(choose)).apply_over(
             cx,
             live! {
+                visible: true
+            },
+        );
+        self.redraw(cx);
+    }
+}
+
+impl ModelSelectorRef {
+    pub fn deselect(&mut self, cx: &mut Cx) {
+        if let Some(mut inner) = self.borrow_mut() {
+            inner.deselect(cx);
+        }
+    }
+}
