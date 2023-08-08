@@ -195,3 +195,28 @@ impl ModelSelectorList {
             let size_visible = !size.trim().is_empty();
 
             item_widget.apply_over(
+                cx,
+                live! {
+                    label = { text: (caption) }
+                    architecture_tag = { visible: (architecture_visible), caption = { text: (architecture) } }
+                    params_size_tag = { visible: (param_size_visible), caption = { text: (param_size) } }
+                    file_size_tag = { visible: (size_visible), caption = { text: (size) } }
+                },
+            );
+
+            let _ = item_widget.draw_all(cx, &mut Scope::empty());
+
+            total_height += item_widget.as_view().area().rect(cx).size.y;
+        }
+        self.total_height = Some(total_height);
+    }
+}
+
+impl ModelSelectorListRef {
+    pub fn get_height(&self) -> f64 {
+        let Some(inner) = self.borrow_mut() else {
+            return 0.0;
+        };
+        inner.total_height.unwrap_or(0.0)
+    }
+}
