@@ -111,3 +111,24 @@ impl Download {
     }
 
     pub fn is_errored(&self) -> bool {
+        matches!(self.state, DownloadState::Errored(_))
+    }
+
+    pub fn get_progress(&self) -> f64 {
+        match self.state {
+            DownloadState::Downloading(progress) => progress,
+            DownloadState::Errored(progress) => progress,
+            DownloadState::Paused(progress) => progress,
+            DownloadState::Completed => 1.0,
+        }
+    }
+
+    pub fn must_show_notification(&mut self) -> bool {
+        if self.notification_pending {
+            self.notification_pending = false;
+            true
+        } else {
+            false
+        }
+    }
+}
