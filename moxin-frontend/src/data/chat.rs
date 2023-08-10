@@ -159,3 +159,79 @@ impl Chat {
             role: Role::Assistant,
             content: "".to_string(),
         });
+
+        let store_chat_tx = self.messages_update_sender.clone();
+        backend.command_sender.send(cmd).unwrap();
+        self.is_streaming = true;
+        thread::spawn(move || loop {
+            if let Ok(response) = rx.recv() {
+                match response {
+                    Ok(ChatResponse::ChatResponseChunk(data)) => {
+                        let mut is_done = false;
+
+                        let _ = store_chat_tx.send(ChatTokenArrivalAction::AppendDelta(
+                            data.choices[0].delta.content.clone(),
+                        ));
+
+                        if let Some(_reason) = &data.choices[0].finish_reason {
+                            is_done = true;
+                            let _ = store_chat_tx.send(ChatTokenArrivalAction::StreamingDone);
+                        }
+
+                        SignalToUI::set_ui_signal();
+                        if is_done {
+                            break;
+                        }
+                    }
+                    Err(err) => eprintln!("Error receiving response chunk: {:?}", err),
+                    _ => (),
+                }
+            } else {
+                break;
+            };
+        });
+
+        self.update_title_based_on_first_message();
+    }
+
+    pub fn cancel_streaming(&mut self, backend: &Backend) {
+        let (tx, _rx) = channel();
+        let cmd = Command::StopChatCompletion(tx);
+        backend.command_sender.send(cmd).unwrap();
+
+        makepad_widgets::log!("Cancel streaming");
+    }
+
+    pub fn update_messages(&mut self) {
+        for msg in self.messages_update_receiver.try_iter() {
+            match msg {
+                ChatTokenArrivalAction::AppendDelta(response) => {
+                    let last = self.messages.last_mut().unwrap();
+                    last.content.push_str(&response);
+                }
+                ChatTokenArrivalAction::StreamingDone => {
+                    self.is_streaming = false;
+                }
+            }
+        }
+    }
+
+    pub fn delete_message(&mut self, message_id: usize) {
+        self.messages.retain(|message| message.id != message_id);
+    }
+
+    pub fn edit_message(&mut self, message_id: usize, updated_message: String) {
+        if let Some(message) = self.messages.iter_mut().find(|m| m.id == message_id) {
+            message.content = updated_message;
+        }
+    }
+
+    pub fn remove_messages_from(&mut self, message_id: usize) {
+        let message_index = self
+            .messages
+            .iter()
+            .position(|m| m.id == message_id)
+            .unwrap();
+        self.messages.truncate(message_index);
+    }
+}
