@@ -7,4 +7,9 @@ pub const DEFAULT_DOWNLOADS_DIR: &str = ".moxin/model_downloads";
 pub const MOXIN_HOME_DIR: &str = ".moxin";
 
 pub fn setup_model_downloads_folder() -> String {
-    let home_dir = h
+    let home_dir = home_dir();
+    let downloads_dir = PathBuf::from(home_dir).join(DEFAULT_DOWNLOADS_DIR);
+
+    if fs::create_dir_all(&downloads_dir).is_err() {
+        eprintln!(
+            "Faile
