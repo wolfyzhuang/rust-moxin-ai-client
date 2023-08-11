@@ -12,4 +12,9 @@ pub fn setup_model_downloads_folder() -> String {
 
     if fs::create_dir_all(&downloads_dir).is_err() {
         eprintln!(
-            "Faile
+            "Failed to create the model downloads directory at '{}'. Using current directory as fallback.",
+            downloads_dir.display()
+        );
+        ".".to_string()
+    } else {
+        downloads_dir.to_string_lossy
