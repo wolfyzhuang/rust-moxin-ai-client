@@ -17,4 +17,14 @@ pub fn setup_model_downloads_folder() -> String {
         );
         ".".to_string()
     } else {
-        downloads_dir.to_string_lossy
+        downloads_dir.to_string_lossy().to_string()
+    }
+}
+
+fn home_dir() -> String {
+    env::var("HOME"). // Unix-like systems
+        or_else(|_| env::var("USERPROFILE")) // Windows
+        .unwrap_or_else(|_| ".".to_string())
+}
+
+pub
