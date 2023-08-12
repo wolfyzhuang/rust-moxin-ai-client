@@ -27,4 +27,7 @@ fn home_dir() -> String {
         .unwrap_or_else(|_| ".".to_string())
 }
 
-pub
+pub fn moxin_home_dir() -> PathBuf {
+    let home_dir = home_dir();
+    PathBuf::from(home_dir).join(MOXIN_HOME_DIR)
+}
