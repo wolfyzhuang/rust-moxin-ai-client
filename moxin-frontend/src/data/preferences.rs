@@ -19,4 +19,16 @@ impl Preferences {
     pub fn load() -> Self {
         match read_from_file() {
             Ok(json) => {
-                let preferences: Preferences = serde_json::from_str(&json).u
+                let preferences: Preferences = serde_json::from_str(&json).unwrap();
+                return preferences;
+            }
+            Err(_) => {}
+        }
+
+        Self {
+            current_chat_model: None,
+        }
+    }
+
+    pub fn save(&self) {
+       
