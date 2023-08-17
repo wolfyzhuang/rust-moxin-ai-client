@@ -31,4 +31,9 @@ impl Preferences {
     }
 
     pub fn save(&self) {
-       
+        let json = serde_json::to_string(&self).unwrap();
+        write_to_file(&json).unwrap();
+    }
+
+    pub fn set_current_chat_model(&mut self, file: FileID) {
+        self.current_chat_m
