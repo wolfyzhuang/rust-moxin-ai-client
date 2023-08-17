@@ -36,4 +36,12 @@ impl Preferences {
     }
 
     pub fn set_current_chat_model(&mut self, file: FileID) {
-        self.current_chat_m
+        self.current_chat_model = Some(file);
+        self.save();
+    }
+}
+
+fn read_from_file() -> Result<String, std::io::Error> {
+    let path = preferences_path();
+
+    let mut file = match File::open(&path) {
