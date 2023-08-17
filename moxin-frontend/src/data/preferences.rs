@@ -45,3 +45,11 @@ fn read_from_file() -> Result<String, std::io::Error> {
     let path = preferences_path();
 
     let mut file = match File::open(&path) {
+        Ok(file) => file,
+        Err(why) => return Err(why),
+    };
+
+    let mut json = String::new();
+    match file.read_to_string(&mut json) {
+        Ok(_) => Ok(json),
+        Err(why) => Err(why)
