@@ -52,4 +52,13 @@ fn read_from_file() -> Result<String, std::io::Error> {
     let mut json = String::new();
     match file.read_to_string(&mut json) {
         Ok(_) => Ok(json),
-        Err(why) => Err(why)
+        Err(why) => Err(why),
+    }
+}
+
+fn write_to_file(json: &str) -> Result<(), std::io::Error> {
+    let path = preferences_path();
+
+    let mut file = match File::create(&path) {
+        Ok(file) => file,
+        
