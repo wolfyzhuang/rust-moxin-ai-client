@@ -61,4 +61,14 @@ fn write_to_file(json: &str) -> Result<(), std::io::Error> {
 
     let mut file = match File::create(&path) {
         Ok(file) => file,
-        
+        Err(why) => return Err(why),
+    };
+
+    match file.write_all(json.as_bytes()) {
+        Ok(_) => Ok(()),
+        Err(why) => Err(why),
+    }
+}
+
+fn preferences_path() -> PathBuf {
+    let 
