@@ -71,4 +71,7 @@ fn write_to_file(json: &str) -> Result<(), std::io::Error> {
 }
 
 fn preferences_path() -> PathBuf {
-    let 
+    let home_dir = moxin_home_dir();
+    let preferences_path = PathBuf::from(home_dir).join(PREFERENCES_FILE);
+    preferences_path
+}
