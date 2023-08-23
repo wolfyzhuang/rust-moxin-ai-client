@@ -1,3 +1,9 @@
 use anyhow::{anyhow, Result};
 use makepad_widgets::SignalToUI;
-use moxin_b
+use moxin_backend::Backend;
+use moxin_protocol::data::*;
+use moxin_protocol::protocol::Command;
+use std::sync::mpsc::{channel, Receiver, Sender};
+use std::thread;
+
+pub enum SearchAction 
