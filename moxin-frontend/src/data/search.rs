@@ -21,4 +21,10 @@ pub enum SearchCommand {
 pub enum SearchState {
     #[default]
     Idle,
-   
+    Pending(SearchCommand, Option<SearchCommand>),
+    Errored,
+}
+pub struct Search {
+    pub keyword: Option<String>,
+    pub sender: Sender<SearchAction>,
+    pub receiver: Receiver<SearchAction
