@@ -27,4 +27,17 @@ pub enum SearchState {
 pub struct Search {
     pub keyword: Option<String>,
     pub sender: Sender<SearchAction>,
-    pub receiver: Receiver<SearchAction
+    pub receiver: Receiver<SearchAction>,
+    pub state: SearchState,
+}
+
+impl Default for Search {
+    fn default() -> Self {
+        Search::new()
+    }
+}
+
+impl Search {
+    pub fn new() -> Self {
+        let (tx, rx) = channel();
+      
