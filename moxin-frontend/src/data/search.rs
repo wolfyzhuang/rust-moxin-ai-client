@@ -49,4 +49,7 @@ impl Search {
         search
     }
 
-    pub fn load_featured_mo
+    pub fn load_featured_models(&mut self, backend: &Backend) {
+        match self.state {
+            SearchState::Pending(_, ref mut next_command) => {
+                *next_command = Some(SearchCom
