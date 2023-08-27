@@ -40,4 +40,13 @@ impl Default for Search {
 impl Search {
     pub fn new() -> Self {
         let (tx, rx) = channel();
-      
+        let search = Self {
+            keyword: None,
+            sender: tx,
+            receiver: rx,
+            state: SearchState::Idle,
+        };
+        search
+    }
+
+    pub fn load_featured_mo
