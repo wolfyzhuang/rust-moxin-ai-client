@@ -52,4 +52,8 @@ impl Search {
     pub fn load_featured_models(&mut self, backend: &Backend) {
         match self.state {
             SearchState::Pending(_, ref mut next_command) => {
-                *next_command = Some(SearchCom
+                *next_command = Some(SearchCommand::LoadFeaturedModels);
+                return;
+            }
+            SearchState::Idle | SearchState::Errored => {
+                self.state = SearchState::Pending(SearchCommand::LoadFeaturedModels, N
