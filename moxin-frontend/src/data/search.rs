@@ -56,4 +56,13 @@ impl Search {
                 return;
             }
             SearchState::Idle | SearchState::Errored => {
-                self.state = SearchState::Pending(SearchCommand::LoadFeaturedModels, N
+                self.state = SearchState::Pending(SearchCommand::LoadFeaturedModels, None);
+                self.keyword = None;
+            }
+        }
+
+        let (tx, rx) = channel();
+
+        let store_search_tx = self.sender.clone();
+        backend
+            .com
