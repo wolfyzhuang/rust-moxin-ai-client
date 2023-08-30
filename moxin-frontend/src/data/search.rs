@@ -65,4 +65,10 @@ impl Search {
 
         let store_search_tx = self.sender.clone();
         backend
-            .com
+            .command_sender
+            .send(Command::GetFeaturedModels(tx))
+            .unwrap();
+
+        thread::spawn(move || {
+            if let Ok(response) = rx.recv() {
+          
