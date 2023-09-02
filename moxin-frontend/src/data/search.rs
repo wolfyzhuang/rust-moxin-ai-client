@@ -80,4 +80,11 @@ impl Search {
                         store_search_tx.send(SearchAction::Error).unwrap();
                     }
                 }
-                SignalToU
+                SignalToUI::set_ui_signal();
+            }
+        });
+    }
+
+    pub fn run_or_enqueue(&mut self, keyword: String, backend: &Backend) {
+        match self.state {
+            SearchState::Pending(_, ref mut next
