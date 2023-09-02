@@ -76,4 +76,8 @@ impl Search {
                         store_search_tx.send(SearchAction::Results(models)).unwrap();
                     }
                     Err(err) => {
-             
+                        eprintln!("Error fetching models: {:?}", err);
+                        store_search_tx.send(SearchAction::Error).unwrap();
+                    }
+                }
+                SignalToU
