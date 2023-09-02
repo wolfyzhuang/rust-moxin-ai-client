@@ -92,4 +92,12 @@ impl Search {
                 return;
             }
             SearchState::Idle | SearchState::Errored => {
-                self.state = S
+                self.state = SearchState::Pending(SearchCommand::Search(keyword.clone()), None);
+            }
+        }
+
+        let (tx, rx) = channel();
+
+        let store_search_tx = self.sender.clone();
+        backend
+            .command_
