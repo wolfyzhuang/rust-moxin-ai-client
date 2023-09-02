@@ -87,4 +87,9 @@ impl Search {
 
     pub fn run_or_enqueue(&mut self, keyword: String, backend: &Backend) {
         match self.state {
-            SearchState::Pending(_, ref mut next
+            SearchState::Pending(_, ref mut next_command) => {
+                *next_command = Some(SearchCommand::Search(keyword));
+                return;
+            }
+            SearchState::Idle | SearchState::Errored => {
+                self.state = S
