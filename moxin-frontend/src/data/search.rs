@@ -107,3 +107,7 @@ impl Search {
         thread::spawn(move || {
             if let Ok(response) = rx.recv() {
                 match response {
+                    Ok(models) => {
+                        store_search_tx.send(SearchAction::Results(models)).unwrap();
+                    }
+                 
