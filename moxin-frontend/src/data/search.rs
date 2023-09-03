@@ -100,4 +100,10 @@ impl Search {
 
         let store_search_tx = self.sender.clone();
         backend
-            .command_
+            .command_sender
+            .send(Command::SearchModels(keyword.clone(), tx))
+            .unwrap();
+
+        thread::spawn(move || {
+            if let Ok(response) = rx.recv() {
+                match response {
