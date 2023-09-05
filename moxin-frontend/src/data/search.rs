@@ -121,4 +121,8 @@ impl Search {
     }
 
     pub fn process_results(&mut self, backend: &Backend) -> Result<Option<Vec<Model>>> {
-        for msg in 
+        for msg in self.receiver.try_iter() {
+            match msg {
+                SearchAction::Results(models) => {
+                    let previous_state = self.state.to_owned();
+                 
