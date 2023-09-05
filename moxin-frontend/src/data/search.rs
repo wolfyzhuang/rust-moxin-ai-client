@@ -115,3 +115,10 @@ impl Search {
                         store_search_tx.send(SearchAction::Error).unwrap();
                     }
                 }
+                SignalToUI::set_ui_signal();
+            }
+        });
+    }
+
+    pub fn process_results(&mut self, backend: &Backend) -> Result<Option<Vec<Model>>> {
+        for msg in 
