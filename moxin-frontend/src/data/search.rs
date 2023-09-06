@@ -133,4 +133,7 @@ impl Search {
                         }
 
                         match next_command {
-                            Some(Search
+                            Some(SearchCommand::Search(next_keyword)) => {
+                                self.run_or_enqueue(next_keyword.clone(), backend);
+                            }
+                            Some(SearchCommand::LoadFeaturedModel
