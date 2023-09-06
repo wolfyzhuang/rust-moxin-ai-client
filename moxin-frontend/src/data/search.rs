@@ -125,4 +125,7 @@ impl Search {
             match msg {
                 SearchAction::Results(models) => {
                     let previous_state = self.state.to_owned();
-                 
+                    self.state = SearchState::Idle;
+
+                    if let SearchState::Pending(current_command, next_command) = previous_state {
+                        if let SearchCommand::Search(keyword) = curr
