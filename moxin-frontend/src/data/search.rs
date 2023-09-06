@@ -128,4 +128,9 @@ impl Search {
                     self.state = SearchState::Idle;
 
                     if let SearchState::Pending(current_command, next_command) = previous_state {
-                        if let SearchCommand::Search(keyword) = curr
+                        if let SearchCommand::Search(keyword) = current_command {
+                            self.keyword = Some(keyword.clone());
+                        }
+
+                        match next_command {
+                            Some(Search
