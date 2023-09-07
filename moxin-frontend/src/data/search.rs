@@ -136,4 +136,9 @@ impl Search {
                             Some(SearchCommand::Search(next_keyword)) => {
                                 self.run_or_enqueue(next_keyword.clone(), backend);
                             }
-                            Some(SearchCommand::LoadFeaturedModel
+                            Some(SearchCommand::LoadFeaturedModels) => {
+                                self.load_featured_models(backend);
+                            }
+                            None => {}
+                        }
+                        return Ok(
