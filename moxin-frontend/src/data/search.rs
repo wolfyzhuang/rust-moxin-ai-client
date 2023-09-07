@@ -146,4 +146,8 @@ impl Search {
                         return Err(anyhow!("Client was not expecting to receive results"));
                     }
                 }
-                S
+                SearchAction::Error => {
+                    self.state = SearchState::Errored;
+                    return Err(anyhow!("Error fetching models from the server"));
+                }
+          
