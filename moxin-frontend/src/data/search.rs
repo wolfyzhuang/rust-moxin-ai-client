@@ -141,4 +141,9 @@ impl Search {
                             }
                             None => {}
                         }
-                        return Ok(
+                        return Ok(Some(models));
+                    } else {
+                        return Err(anyhow!("Client was not expecting to receive results"));
+                    }
+                }
+                S
