@@ -160,4 +160,6 @@ impl Search {
     }
 
     pub fn was_error(&self) -> bool {
-        matches!(se
+        matches!(self.state, SearchState::Errored)
+    }
+}
