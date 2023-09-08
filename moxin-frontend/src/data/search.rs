@@ -150,4 +150,14 @@ impl Search {
                     self.state = SearchState::Errored;
                     return Err(anyhow!("Error fetching models from the server"));
                 }
-          
+            }
+        }
+        return Ok(None)
+    }
+
+    pub fn is_pending(&self) -> bool {
+        matches!(self.state, SearchState::Pending(_, _))
+    }
+
+    pub fn was_error(&self) -> bool {
+        matches!(se
