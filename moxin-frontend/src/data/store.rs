@@ -548,3 +548,169 @@ impl Store {
                 pending.status = match download.state {
                     DownloadState::Downloading(_) => PendingDownloadsStatus::Downloading,
                     DownloadState::Paused(_) => PendingDownloadsStatus::Paused,
+                    DownloadState::Errored(_) => PendingDownloadsStatus::Error,
+                    DownloadState::Completed => PendingDownloadsStatus::Downloading,
+                };
+            }
+        }
+
+        if !completed_download_ids.is_empty() {
+            // Reload downloaded files
+            self.load_downloaded_files();
+            self.load_pending_downloads();
+        }
+
+        for file_id in completed_download_ids {
+            self.set_file_downloaded_state(&file_id, true);
+        }
+    }
+
+    fn set_file_downloaded_state(&mut self, file_id: &FileID, downloaded: bool) {
+        let model = self
+            .models
+            .iter_mut()
+            .find(|m| m.files.iter().any(|f| f.id == *file_id));
+        if let Some(model) = model {
+            let file = model.files.iter_mut().find(|f| f.id == *file_id).unwrap();
+            file.downloaded = downloaded;
+        }
+    }
+
+    pub fn next_download_notification(&mut self) -> Option<DownloadPendingNotification> {
+        self.current_downloads
+            .iter_mut()
+            .filter_map(|(_, download)| {
+                if download.must_show_notification() {
+                    if download.is_errored() {
+                        return Some(DownloadPendingNotification::DownloadErrored(
+                            download.file.clone(),
+                        ));
+                    } else if download.is_complete() {
+                        return Some(DownloadPendingNotification::DownloadedFile(
+                            download.file.clone(),
+                        ));
+                    } else {
+                        return None;
+                    }
+                }
+                None
+            })
+            .next()
+    }
+
+    // Utility functions
+
+    pub fn sort_models(&mut self, criteria: SortCriteria) {
+        match criteria {
+            SortCriteria::MostDownloads => {
+                self.models
+                    .sort_by(|a, b| b.download_count.cmp(&a.download_count));
+            }
+            SortCriteria::LeastDownloads => {
+                self.models
+                    .sort_by(|a, b| a.download_count.cmp(&b.download_count));
+            }
+            SortCriteria::MostLikes => {
+                self.models.sort_by(|a, b| b.like_count.cmp(&a.like_count));
+            }
+            SortCriteria::LeastLikes => {
+                self.models.sort_by(|a, b| a.like_count.cmp(&b.like_count));
+            }
+        }
+        self.sorted_by = criteria;
+    }
+
+    fn sort_models_by_current_criteria(&mut self) {
+        self.sort_models(self.sorted_by);
+    }
+
+    pub fn formatted_model_release_date(model: &Model) -> String {
+        let released_at = model.released_at.naive_local().format("%b %-d, %C%y");
+        let days_ago = (Utc::now() - model.released_at).num_days();
+        format!("{} ({} days ago)", released_at, days_ago)
+    }
+
+    pub fn model_featured_files(model: &Model) -> Vec<File> {
+        model.files.iter().filter(|f| f.featured).cloned().collect()
+    }
+
+    pub fn model_other_files(model: &Model) -> Vec<File> {
+        model
+            .files
+            .iter()
+            .filter(|f| !f.featured)
+            .cloned()
+            .collect()
+    }
+
+    pub fn current_downloads_info(&self) -> Vec<DownloadInfo> {
+        // Collect information about downloads triggered in this session
+        let mut results: Vec<DownloadInfo> = self
+            .current_downloads
+            .iter()
+            .filter_map(|(_id, download)| {
+                if !download.is_complete() {
+                    Some(DownloadInfo {
+                        file: download.file.clone(),
+                        model: download.model.clone(),
+                        state: download.state,
+                    })
+                } else {
+                    None
+                }
+            })
+            .collect();
+
+        // Add files that are still partially downloaded (from previous sessions with the app)
+        // TODO: Get rid of this list, merge into `current_downloads`
+        let mut partial_downloads: Vec<DownloadInfo> = self
+            .pending_downloads
+            .iter()
+            .filter(|f| !self.current_downloads.contains_key(&f.file.id))
+            .map(|d| DownloadInfo {
+                file: d.file.clone(),
+                model: d.model.clone(),
+                state: DownloadState::Paused(d.progress),
+            })
+            .collect();
+
+        results.append(&mut partial_downloads);
+        results
+    }
+
+    pub fn get_model_with_pending_downloads(
+        &self,
+        model_id: &str,
+    ) -> Option<ModelWithPendingDownloads> {
+        let model = self.models.iter().find(|m| m.id == model_id)?;
+        let pending_downloads = self
+            .pending_downloads
+            .iter()
+            .filter(|d| d.model.id == model_id)
+            .cloned()
+            .collect();
+        let current_file_id = model
+            .files
+            .iter()
+            .find(|f| {
+                self.get_current_chat()
+                    .as_ref()
+                    .map_or(false, |c| c.borrow().file_id == f.id)
+            })
+            .map(|f| f.id.clone());
+
+        Some(ModelWithPendingDownloads {
+            model: model.clone(),
+            pending_downloads,
+            current_file_id,
+        })
+    }
+
+    pub fn search_is_loading(&self) -> bool {
+        self.search.is_pending()
+    }
+
+    pub fn search_is_errored(&self) -> bool {
+        self.search.was_error()
+    }
+}
