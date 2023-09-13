@@ -378,3 +378,173 @@ impl Store {
 
                 chat.remove_messages_from(message_id);
                 chat.send_message_to_model(updated_message, &self.backend);
+            } else {
+                chat.edit_message(message_id, updated_message);
+            }
+        }
+    }
+
+    pub fn process_event_signal(&mut self) {
+        self.update_downloads();
+        self.update_chat_messages();
+        self.update_search_results();
+    }
+
+    fn set_models(&mut self, models: Vec<Model>) {
+        #[cfg(not(debug_assertions))]
+        {
+            self.models = models;
+        }
+        #[cfg(debug_assertions)]
+        'debug_block: {
+            use lipsum::lipsum;
+            use rand::distributions::{Alphanumeric, DistString};
+            use rand::Rng;
+            let mut rng = rand::thread_rng();
+            fn random_string(size: usize) -> String {
+                Alphanumeric.sample_string(&mut rand::thread_rng(), size)
+            }
+
+            let fill_fake_data = std::env::var("FILL_FAKE_DATA").is_ok_and(|fill_fake_data| {
+                ["true", "t", "1"].iter().any(|&s| s == fill_fake_data)
+            });
+
+            if !fill_fake_data {
+                self.models = models;
+                break 'debug_block;
+            }
+
+            let faked_models: Vec<Model> = models
+                .iter()
+                .map(|model| {
+                    // filling model attributes
+                    let mut new_model = model.clone();
+                    if model.summary.is_empty() {
+                        new_model.summary = lipsum(30);
+                    }
+
+                    if model.name.is_empty() {
+                        // we might need a fancier word generator
+                        new_model.name = format!(
+                            "{}-{}-{}{}-{}-{}",
+                            lipsum(1),
+                            rng.gen_range(0..10),
+                            random_string(1).to_uppercase(),
+                            rng.gen_range(0..10),
+                            lipsum(1),
+                            lipsum(1),
+                        );
+                    }
+
+                    if model.size.is_empty() {
+                        new_model.size = format!("{}B", rng.gen_range(1..10));
+                    };
+
+                    if model.requires.is_empty() {
+                        new_model.requires = match rng.gen_range(0..3) {
+                            0 => "4GB+ RAM".to_string(),
+                            1 => "8GB+ RAM".to_string(),
+                            2 => "16GB+ RAM".to_string(),
+                            _ => "32GB+ RAM".to_string(),
+                        };
+                    }
+
+                    if model.architecture.is_empty() {
+                        new_model.architecture = match rng.gen_range(0..3) {
+                            0 => "Mistral".to_string(),
+                            1 => "StableLM".to_string(),
+                            2 => "LlaMa".to_string(),
+                            _ => "qwen2".to_string(),
+                        };
+                    }
+
+                    if model.like_count == 0 {
+                        new_model.like_count = rng.gen_range(1..1000);
+                    };
+
+                    if model.download_count == 0 {
+                        new_model.download_count = rng.gen_range(0..10000);
+                    };
+
+                    // filling files
+                    let new_files: Vec<File> = model
+                        .files
+                        .iter()
+                        .map(|file| {
+                            let mut new_file = file.clone();
+
+                            if new_file.quantization.is_empty() {
+                                new_file.quantization = format!(
+                                    "Q{}_{}_{}",
+                                    rng.gen_range(0..10),
+                                    random_string(1).to_uppercase(),
+                                    random_string(1).to_uppercase()
+                                );
+                            }
+
+                            if file.name.is_empty() {
+                                // we might need a fancier word generator
+                                new_file.name = format!(
+                                    "{}-{}-{}-{}-{}.{}.gguf",
+                                    lipsum(1),
+                                    rng.gen_range(0..10),
+                                    random_string(5),
+                                    lipsum(1),
+                                    new_file.quantization,
+                                    rng.gen_range(0..10),
+                                );
+                            }
+
+                            if file.size.is_empty() {
+                                new_file.size = rng.gen_range(100000000..999999999).to_string();
+                            };
+
+                            new_file
+                        })
+                        .collect();
+
+                    new_model.files = new_files;
+                    new_model
+                })
+                .collect();
+            self.models = faked_models;
+        }
+    }
+
+    fn update_search_results(&mut self) {
+        match self.search.process_results(&self.backend) {
+            Ok(Some(models)) => {
+                self.set_models(models);
+                self.sort_models_by_current_criteria();
+            }
+            Ok(None) => {
+                // No results arrived, do nothing
+            }
+            Err(_) => {
+                self.set_models(vec![]);
+            }
+        }
+    }
+
+    fn update_chat_messages(&mut self) {
+        let Some(chat) = self.get_current_chat() else {
+            return;
+        };
+        chat.borrow_mut().update_messages();
+    }
+
+    fn update_downloads(&mut self) {
+        let mut completed_download_ids = Vec::new();
+
+        for (id, download) in &mut self.current_downloads {
+            download.process_download_progress();
+            if download.is_complete() {
+                completed_download_ids.push(id.clone());
+            }
+
+            // Workaround to keep the duplicate data in pending downloads in sync.
+            if let Some(pending) = self.pending_downloads.iter_mut().find(|d| d.file.id == *id) {
+                pending.progress = download.get_progress();
+                pending.status = match download.state {
+                    DownloadState::Downloading(_) => PendingDownloadsStatus::Downloading,
+                    DownloadState::Paused(_) => PendingDownloadsStatus::Paused,
