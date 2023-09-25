@@ -230,3 +230,6 @@ impl Downloads {
             live! {
                 draw_icon: { rotation_angle: (rotation_angle) }
             },
+        );
+    }
+}
