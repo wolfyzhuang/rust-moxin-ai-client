@@ -195,3 +195,20 @@ impl WidgetMatchEvent for LandingScreen {
                         let store = scope.data.get::<Store>().unwrap();
                         let sorting_ref = self.sorting(id!(sorting));
                         sorting_ref.set_visible(cx, true);
+                        sorting_ref.set_selected_item(store.sorted_by);
+                    }
+                    _ => {}
+                },
+                StoreAction::ResetSearch => match self.search_bar_state {
+                    SearchBarState::ExpandedWithFilters | SearchBarState::CollapsedWithFilters => {
+                        self.search_bar_state = SearchBarState::ExpandedWithoutFilters;
+                        self.search_bar(id!(search_bar)).expand(cx);
+                        self.sorting(id!(sorting)).set_visible(cx, false);
+                    }
+                    _ => {}
+                },
+                _ => {}
+            }
+        }
+    }
+}
