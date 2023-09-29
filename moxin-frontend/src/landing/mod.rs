@@ -16,4 +16,9 @@ use makepad_widgets::Cx;
 
 pub fn live_design(cx: &mut Cx) {
     shared::live_design(cx);
-    model_files_tags::live_design(
+    model_files_tags::live_design(cx);
+    model_files_item::live_design(cx);
+    model_files_list::live_design(cx);
+    model_files::live_design(cx);
+    model_card::live_design(cx);
+    model_list::live_des
