@@ -21,4 +21,10 @@ pub fn live_design(cx: &mut Cx) {
     model_files_list::live_design(cx);
     model_files::live_design(cx);
     model_card::live_design(cx);
-    model_list::live_des
+    model_list::live_design(cx);
+    landing_screen::live_design(cx);
+    search_bar::live_design(cx);
+    search_loading::live_design(cx);
+    sorting::live_design(cx);
+    downloads::live_design(cx);
+    download_item::live_design(cx);
