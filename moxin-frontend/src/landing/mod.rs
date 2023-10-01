@@ -28,3 +28,4 @@ pub fn live_design(cx: &mut Cx) {
     sorting::live_design(cx);
     downloads::live_design(cx);
     download_item::live_design(cx);
+}
