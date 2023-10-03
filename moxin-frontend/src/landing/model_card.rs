@@ -182,3 +182,206 @@ live_design! {
         height: Fit,
         flow: Down,
         spacing: 20,
+
+        <Label> {
+            draw_text:{
+                text_style: <BOLD_FONT>{font_size: 11},
+                color: #000
+            }
+            text: "Resources"
+        }
+
+        <View> {
+            align: {x: 0.5, y: 1.0},
+            width: Fit,
+            height: Fit,
+            author_link = <ExternalLink> {}
+            <ExternalLinkIcon> {}
+        }
+
+        <View> {
+            align: {x: 0.5, y: 1.0},
+            width: Fit,
+            height: Fit,
+            model_hugging_face_link = <ExternalLink> { link = { text: "Hugging Face" } }
+            <ExternalLinkIcon> {}
+        }
+    }
+
+    ModelInformation = <View> {
+        width: Fill,
+        height: Fit,
+        spacing: 10,
+        <ModelSummary> {}
+        <ModelDetails> {}
+    }
+
+
+    ModelCardViewAllModal = {{ModelCardViewAllModal}} {
+        width: Fit
+        height: Fit
+
+        <RoundedView> {
+            flow: Down
+            width: 600
+            height: Fit
+            padding: {top: 30, right: 30 bottom: 50 left: 50}
+            spacing: 10
+
+            show_bg: true
+            draw_bg: {
+                color: #fff
+                radius: 3
+            }
+
+            <View> {
+                width: Fill,
+                height: Fit,
+                filler_x = <View> {width: Fill, height: Fit}
+
+                close_button = <RoundedView> {
+                    width: Fit,
+                    height: Fit,
+                    align: {x: 0.5, y: 0.5}
+                    cursor: Hand
+
+                    button_icon = <Icon> {
+                        draw_icon: {
+                            svg_file: (ICON_CLOSE),
+                            fn get_color(self) -> vec4 {
+                                return #000;
+                            }
+                        }
+                        icon_walk: {width: 12, height: 12}
+                    }
+                }
+            }
+
+            <View> {
+                width: Fill,
+                height: Fit,
+                padding: {bottom: 20}
+
+                model_name = <Label> {
+                    draw_text: {
+                        text_style: <BOLD_FONT>{font_size: 16},
+                        color: #000
+                    }
+                }
+            }
+
+            <View> {
+                width: Fill,
+                height: Fit,
+                flow: Down,
+                spacing: 10,
+
+                <Label> {
+                    draw_text:{
+                        text_style: <BOLD_FONT>{font_size: 9},
+                        color: #000
+                    }
+                    text: "Model Description"
+                }
+                model_summary = <Label> {
+                    width: Fill,
+                    draw_text:{
+                        text_style: <REGULAR_FONT>{font_size: 9},
+                        word: Wrap,
+                        color: #000
+                    }
+                }
+            }
+        }
+    }
+
+
+    ModelCard = {{ModelCard}} {
+        width: Fill,
+        height: Fit,
+
+        <RoundedView> {
+            width: Fill,
+            height: Fit,
+
+            draw_bg: {
+                instance radius: 3.0,
+                color: #F9FAFB,
+                border_color: #DFDFDF,
+                border_width: 1.0,
+            }
+
+            flow: Down,
+            padding: 30,
+            spacing: 20,
+
+            <ModelHeading> {}
+            <Line> {}
+            <ModelInformation> {}
+            <ModelFiles> {}
+        }
+    }
+}
+
+#[derive(Live, LiveHook, Widget)]
+pub struct ModelCard {
+    #[deref]
+    view: View,
+
+    #[rust]
+    model_id: String,
+}
+
+impl Widget for ModelCard {
+    fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+        self.view.handle_event(cx, event, scope);
+        self.widget_match_event(cx, event, scope);
+    }
+
+    fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
+        let model = &scope.data.get::<ModelWithPendingDownloads>().unwrap().model;
+
+        self.model_id = model.id.clone();
+
+        let name = &model.name;
+        self.label(id!(model_name)).set_text(name);
+
+        let download_count = &model.download_count;
+        self.label(id!(model_download_count.attr_value))
+            .set_text(&format!("{}", download_count));
+
+        let like_count = &model.like_count;
+        self.label(id!(model_like_count.attr_value))
+            .set_text(&format!("{}", like_count));
+
+        let size = &model.size;
+        self.label(id!(model_size_tag.attr_value)).set_text(size);
+
+        let requires = &model.requires;
+        self.label(id!(model_requires_tag.attr_value))
+            .set_text(requires);
+
+        let architecture = &model.architecture;
+        self.label(id!(model_architecture_tag.attr_value))
+            .set_text(architecture);
+
+        let summary = &model.summary;
+        const MAX_SUMMARY_LENGTH: usize = 500;
+        let trimmed_summary = if summary.len() > MAX_SUMMARY_LENGTH {
+            let trimmed = summary
+                .graphemes(true)
+                .take(MAX_SUMMARY_LENGTH)
+                .collect::<String>();
+            format!("{}...", trimmed)
+        } else {
+            summary.to_string()
+        };
+        self.label(id!(model_summary)).set_text(&trimmed_summary);
+
+        let author_name = &model.author.name;
+        let author_url = &model.author.url;
+        let mut author_external_link = self.external_link(id!(author_link));
+        author_external_link
+            .link_label(id!(link))
+            .set_text(author_name);
+        author_external_link.set_url(author_url);
