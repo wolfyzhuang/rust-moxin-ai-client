@@ -385,3 +385,98 @@ impl Widget for ModelCard {
             .link_label(id!(link))
             .set_text(author_name);
         author_external_link.set_url(author_url);
+
+        let model_hugging_face_url = hugging_face_model_url(&model.id);
+        let mut model_hugging_face_external_link = self.external_link(id!(model_hugging_face_link));
+        model_hugging_face_external_link.set_url(&model_hugging_face_url);
+
+        let author_description = &model.author.description;
+        self.label(id!(author_description))
+            .set_text(author_description);
+
+        let released_at_str = Store::formatted_model_release_date(&model);
+        self.label(id!(model_released_at_tag.attr_value))
+            .set_text(&released_at_str);
+
+        self.view.draw_walk(cx, scope, walk)
+    }
+}
+
+impl WidgetMatchEvent for ModelCard {
+    fn handle_actions(&mut self, cx: &mut Cx, actions: &Actions, scope: &mut Scope) {
+        let widget_uid = self.widget_uid();
+
+        if self.link_label(id!(view_all_button.link)).clicked(actions) {
+            cx.widget_action(
+                widget_uid,
+                &scope.path,
+                ModalAction::ShowModalView(live_id!(model_card_view_all_modal_view)),
+            );
+
+            cx.widget_action(
+                widget_uid,
+                &scope.path,
+                ViewAllModalAction::ModelSelected(self.model_id.clone()),
+            );
+        }
+    }
+}
+
+// TODO: Make it so this action and setting the model id from the outside isnt needed
+//       find a way to pass the data inside the Modal action itself.
+#[derive(Clone, DefaultNone, Eq, Hash, PartialEq, Debug)]
+pub enum ViewAllModalAction {
+    None,
+    ModelSelected(ModelID),
+}
+
+#[derive(Live, LiveHook, Widget)]
+pub struct ModelCardViewAllModal {
+    #[deref]
+    view: View,
+    #[rust]
+    model_id: ModelID,
+}
+
+impl Widget for ModelCardViewAllModal {
+    fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+        self.view.handle_event(cx, event, scope);
+        self.widget_match_event(cx, event, scope);
+    }
+
+    fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
+        let store = scope.data.get::<Store>().unwrap();
+        let model = store.models.iter().find(|model| model.id == self.model_id);
+
+        if let Some(model) = model {
+            let name = &model.name;
+            self.label(id!(model_name)).set_text(name);
+
+            let summary = &model.summary;
+            self.label(id!(model_summary)).set_text(summary);
+        }
+
+        self.view
+            .draw_walk(cx, scope, walk.with_abs_pos(DVec2 { x: 0., y: 0. }))
+    }
+}
+
+impl WidgetMatchEvent for ModelCardViewAllModal {
+    fn handle_actions(&mut self, cx: &mut Cx, actions: &Actions, scope: &mut Scope) {
+        let widget_uid = self.widget_uid();
+
+        if let Some(fe) = self.view(id!(close_button)).finger_up(actions) {
+            if fe.was_tap() {
+                cx.widget_action(widget_uid, &scope.path, ModalAction::CloseModal);
+            }
+        }
+    }
+}
+
+impl ModelCardViewAllModalRef {
+    pub fn set_model_id(&mut self, model_id: ModelID) {
+        if let Some(mut inner) = self.borrow_mut() {
+            inner.model_id = model_id;
+        }
+    }
+}
