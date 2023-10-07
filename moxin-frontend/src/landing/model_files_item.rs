@@ -11,4 +11,8 @@ live_design! {
 
     import crate::shared::styles::*;
     import crate::shared::widgets::MoxinButton;
-    import crate::landing::mo
+    import crate::landing::model_files_tags::ModelFilesTags;
+
+    ICON_DOWNLOAD = dep("crate://self/resources/icons/download.svg")
+    START_CHAT = dep("crate://self/resources/icons/start_chat.svg")
+    RESUME_CHAT = dep("crate:/
