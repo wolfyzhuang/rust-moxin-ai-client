@@ -15,4 +15,8 @@ live_design! {
 
     ICON_DOWNLOAD = dep("crate://self/resources/icons/download.svg")
     START_CHAT = dep("crate://self/resources/icons/start_chat.svg")
-    RESUME_CHAT = dep("crate:/
+    RESUME_CHAT = dep("crate://self/resources/icons/play_arrow.svg")
+
+    ICON_PAUSE = dep("crate://self/resources/icons/pause_download.svg")
+    ICON_CANCEL = dep("crate://self/resources/icons/cancel_download.svg")
+    ICON_PLAY =
