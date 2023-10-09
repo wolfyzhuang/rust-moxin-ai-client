@@ -32,4 +32,6 @@ live_design! {
             radius: vec2(1.0, 1.0)
         }
 
-        cell1 = <View> { width: Fill, he
+        cell1 = <View> { width: Fill, height: 56, padding: 10, align: {x: 0.0, y: 0.5} }
+        cell2 = <View> { width: 140, height: 56, padding: 10, align: {x: 0.0, y: 0.5} }
+        cell3 = <View> { width: 340, height: 56, padd
