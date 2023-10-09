@@ -23,4 +23,13 @@ live_design! {
     ICON_RETRY = dep("crate://self/resources/icons/retry_download.svg")
 
     ModelFilesRow = <RoundedYView> {
-        widt
+        width: Fill,
+        height: Fit,
+
+        show_bg: true,
+        draw_bg: {
+            color: #00f
+            radius: vec2(1.0, 1.0)
+        }
+
+        cell1 = <View> { width: Fill, he
