@@ -40,4 +40,11 @@ live_design! {
 
     ModelCardButton = <MoxinButton> {
         width: 140,
-   
+        height: 32,
+    }
+
+    DownloadButton = <ModelCardButton> {
+        draw_bg: { color: #099250, border_color: #099250 }
+        text: "Download"
+        draw_icon: {
+            svg_file: (I
