@@ -47,4 +47,11 @@ live_design! {
         draw_bg: { color: #099250, border_color: #099250 }
         text: "Download"
         draw_icon: {
-            svg_file: (I
+            svg_file: (ICON_DOWNLOAD),
+        }
+    }
+
+    StartChatButton = <ModelCardButton> {
+        draw_bg: { color: #fff, color_hover: #09925033, border_color: #d0d5dd }
+        text: "Chat with Model"
+     
