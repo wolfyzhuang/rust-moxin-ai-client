@@ -64,3 +64,10 @@ live_design! {
     }
 
     ResumeChatButton = <ModelCardButton> {
+        draw_bg: { color: #099250, border_color: #09925033 }
+        text: "Resume Chat"
+        draw_text: {
+            color: #fff;
+        }
+        draw_icon: {
+            svg_file: (RESUME_CH
