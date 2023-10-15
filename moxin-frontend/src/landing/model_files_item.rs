@@ -70,4 +70,14 @@ live_design! {
             color: #fff;
         }
         draw_icon: {
-            svg_file: (RESUME_CH
+            svg_file: (RESUME_CHAT),
+        }
+    }
+
+    DownloadPendingButton = <MoxinButton> {
+        width: 25,
+        height: 25,
+        padding: 4,
+        draw_icon: {
+            fn get_color(self) -> vec4 {
+                
