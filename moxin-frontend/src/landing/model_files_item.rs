@@ -80,4 +80,15 @@ live_design! {
         padding: 4,
         draw_icon: {
             fn get_color(self) -> vec4 {
-                
+                return #667085;
+            }
+        }
+    }
+
+    DownloadPendingControls = <View> {
+        align: {y: 0.5},
+        spacing: 8,
+        progress_bar = <View> {
+            width: 74,
+            height: 12,
+    
