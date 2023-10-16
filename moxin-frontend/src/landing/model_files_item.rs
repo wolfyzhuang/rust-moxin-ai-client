@@ -91,4 +91,12 @@ live_design! {
         progress_bar = <View> {
             width: 74,
             height: 12,
-    
+            flow: Overlay,
+
+            <RoundedView> {
+                height: Fill,
+                draw_bg: {
+                    color: #D9D9D9,
+                    radius: 2.5,
+                }
+         
