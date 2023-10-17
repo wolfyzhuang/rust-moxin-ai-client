@@ -99,4 +99,11 @@ live_design! {
                     color: #D9D9D9,
                     radius: 2.5,
                 }
-         
+            }
+
+            progress_fill = <RoundedView> {
+                width: 0,
+                height: Fill,
+                draw_bg: {
+                    radius: 2.5,
+             
