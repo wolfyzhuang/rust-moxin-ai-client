@@ -106,4 +106,11 @@ live_design! {
                 height: Fill,
                 draw_bg: {
                     radius: 2.5,
-             
+                }
+            }
+        }
+        progress_text_layout = <View> {
+            width: 40,
+            align: {x: 1, y: 0.5},
+            progress_text = <Label> {
+              
