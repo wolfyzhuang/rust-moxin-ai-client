@@ -126,4 +126,10 @@ live_design! {
                 svg_file: (ICON_PLAY),
             }
         }
-        retry_download_button = <Downlo
+        retry_download_button = <DownloadPendingButton> {
+            draw_icon: {
+                svg_file: (ICON_RETRY),
+            }
+        }
+        pause_download_button = <DownloadPendingButton> {
+            icon_walk: { margin: { l
