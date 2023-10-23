@@ -120,4 +120,10 @@ live_design! {
             }
         }
 
-        resume_download_button = <Downl
+        resume_download_button = <DownloadPendingButton> {
+            icon_walk: { margin: { left: 4 } }
+            draw_icon: {
+                svg_file: (ICON_PLAY),
+            }
+        }
+        retry_download_button = <Downlo
