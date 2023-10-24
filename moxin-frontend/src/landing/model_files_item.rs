@@ -132,4 +132,11 @@ live_design! {
             }
         }
         pause_download_button = <DownloadPendingButton> {
-            icon_walk: { margin: { l
+            icon_walk: { margin: { left: 4 } }
+            draw_icon: {
+                svg_file: (ICON_PAUSE),
+            }
+        }
+        cancel_download_button = <DownloadPendingButton> {
+            draw_icon: {
+                svg_file: 
