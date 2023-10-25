@@ -139,4 +139,13 @@ live_design! {
         }
         cancel_download_button = <DownloadPendingButton> {
             draw_icon: {
-                svg_file: 
+                svg_file: (ICON_CANCEL),
+            }
+        }
+    }
+
+    ModelFilesItem = {{ModelFilesItem}}<ModelFilesRow> {
+        show_bg: true,
+        draw_bg: {
+            color: #fff
+    
