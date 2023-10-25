@@ -148,4 +148,11 @@ live_design! {
         show_bg: true,
         draw_bg: {
             color: #fff
-    
+        }
+
+        cell1 = {
+            spacing: 10,
+            filename = <Label> {
+                draw_text:{
+                    text_style: <BOLD_FONT>{font_size: 9},
+                    color: #000
