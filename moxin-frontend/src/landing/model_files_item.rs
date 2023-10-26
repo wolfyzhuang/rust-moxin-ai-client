@@ -156,3 +156,12 @@ live_design! {
                 draw_text:{
                     text_style: <BOLD_FONT>{font_size: 9},
                     color: #000
+                }
+            }
+        }
+
+        cell2 = {
+            full_size = <Label> {
+                draw_text:{
+                    text_style: <REGULAR_FONT>{font_size: 9},
+            
