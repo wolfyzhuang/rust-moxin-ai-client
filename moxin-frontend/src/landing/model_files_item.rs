@@ -164,4 +164,12 @@ live_design! {
             full_size = <Label> {
                 draw_text:{
                     text_style: <REGULAR_FONT>{font_size: 9},
-            
+                    color: #000
+                }
+            }
+        }
+
+        cell3 = {
+            spacing: 6,
+            quantization_tag = <RoundedView> {
+             
