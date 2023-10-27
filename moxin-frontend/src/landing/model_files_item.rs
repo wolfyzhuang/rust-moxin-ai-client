@@ -172,4 +172,10 @@ live_design! {
         cell3 = {
             spacing: 6,
             quantization_tag = <RoundedView> {
-             
+                width: Fit,
+                height: Fit,
+                padding: {top: 6, bottom: 6, left: 10, right: 10}
+
+                draw_bg: {
+                    instance radius: 2.0,
+               
