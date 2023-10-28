@@ -178,4 +178,10 @@ live_design! {
 
                 draw_bg: {
                     instance radius: 2.0,
-               
+                    border_color: #B4B4B4,
+                    border_width: 0.5,
+                    color: #FFF,
+                }
+
+                quantization = <Label> {
+                    draw_text:{
