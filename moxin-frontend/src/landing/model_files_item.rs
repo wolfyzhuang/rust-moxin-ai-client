@@ -190,4 +190,10 @@ live_design! {
                     }
                 }
             }
-            tags
+            tags = <ModelFilesTags> {}
+        }
+
+        cell4 = {
+            download_button = <DownloadButton> { visible: false }
+            start_chat_button = <StartChatButton> { visible: false }
+            
