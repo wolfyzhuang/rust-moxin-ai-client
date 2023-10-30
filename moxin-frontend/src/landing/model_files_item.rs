@@ -196,4 +196,10 @@ live_design! {
         cell4 = {
             download_button = <DownloadButton> { visible: false }
             start_chat_button = <StartChatButton> { visible: false }
-            
+            resume_chat_button = <ResumeChatButton> { visible: false }
+            download_pending_controls = <DownloadPendingControls> { visible: false }
+        }
+    }
+}
+
+#[derive(Clone, DefaultNone, 
