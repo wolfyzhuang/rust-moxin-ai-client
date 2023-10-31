@@ -202,4 +202,16 @@ live_design! {
     }
 }
 
-#[derive(Clone, DefaultNone, 
+#[derive(Clone, DefaultNone, Debug)]
+pub enum ModelFileItemAction {
+    Download(FileID),
+    None,
+}
+
+#[derive(Live, LiveHook, Widget)]
+pub struct ModelFilesItem {
+    #[deref]
+    view: View,
+
+    #[rust]
+    file_id: Option<FileID
