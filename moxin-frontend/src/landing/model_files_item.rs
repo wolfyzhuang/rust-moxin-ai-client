@@ -214,4 +214,10 @@ pub struct ModelFilesItem {
     view: View,
 
     #[rust]
-    file_id: Option<FileID
+    file_id: Option<FileID>,
+}
+
+impl Widget for ModelFilesItem {
+    fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+        self.view.handle_event(cx, event, scope);
+        self.widget_match_event(cx, event, s
