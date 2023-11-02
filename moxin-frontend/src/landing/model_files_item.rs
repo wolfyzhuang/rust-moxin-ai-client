@@ -228,4 +228,7 @@ impl Widget for ModelFilesItem {
     }
 }
 
-impl WidgetMatc
+impl WidgetMatchEvent for ModelFilesItem {
+    fn handle_actions(&mut self, cx: &mut Cx, actions: &Actions, scope: &mut Scope) {
+        let widget_uid = self.widget_uid();
+        let So
