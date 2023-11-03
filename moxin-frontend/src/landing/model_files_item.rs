@@ -231,4 +231,10 @@ impl Widget for ModelFilesItem {
 impl WidgetMatchEvent for ModelFilesItem {
     fn handle_actions(&mut self, cx: &mut Cx, actions: &Actions, scope: &mut Scope) {
         let widget_uid = self.widget_uid();
-        let So
+        let Some(file_id) = self.file_id.clone() else {
+            return;
+        };
+
+        if self.button(id!(download_button)).clicked(&actions) {
+            cx.widget_action(
+                widget_u
