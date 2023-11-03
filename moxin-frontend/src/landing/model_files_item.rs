@@ -237,4 +237,11 @@ impl WidgetMatchEvent for ModelFilesItem {
 
         if self.button(id!(download_button)).clicked(&actions) {
             cx.widget_action(
-                widget_u
+                widget_uid,
+                &scope.path,
+                ModelFileItemAction::Download(file_id.clone()),
+            );
+        }
+
+        if self.button(id!(start_chat_button)).clicked(&actions) {
+            cx.wid
