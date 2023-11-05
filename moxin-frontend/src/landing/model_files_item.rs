@@ -244,4 +244,8 @@ impl WidgetMatchEvent for ModelFilesItem {
         }
 
         if self.button(id!(start_chat_button)).clicked(&actions) {
-            cx.wid
+            cx.widget_action(widget_uid, &scope.path, ChatAction::Start(file_id.clone()));
+        }
+
+        if self.button(id!(resume_chat_button)).clicked(&actions) {
+            cx.widget_action(widget_uid,
