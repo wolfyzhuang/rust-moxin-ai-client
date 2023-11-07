@@ -253,4 +253,13 @@ impl WidgetMatchEvent for ModelFilesItem {
 
         if [id!(resume_download_button), id!(retry_download_button)]
             .iter()
-            .any(|id| self.button(*id).cli
+            .any(|id| self.button(*id).clicked(&actions))
+        {
+            cx.widget_action(
+                widget_uid,
+                &scope.path,
+                DownloadAction::Play(file_id.clone()),
+            );
+        }
+
+        if self.butto
