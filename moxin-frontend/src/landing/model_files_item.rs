@@ -262,4 +262,8 @@ impl WidgetMatchEvent for ModelFilesItem {
             );
         }
 
-        if self.butto
+        if self.button(id!(pause_download_button)).clicked(&actions) {
+            cx.widget_action(
+                widget_uid,
+                &scope.path,
+                DownloadAction::Pause(file_id.cl
