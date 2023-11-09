@@ -273,4 +273,13 @@ impl WidgetMatchEvent for ModelFilesItem {
         if self.button(id!(cancel_download_button)).clicked(&actions) {
             cx.widget_action(
                 widget_uid,
-              
+                &scope.path,
+                DownloadAction::Cancel(file_id.clone()),
+            );
+        }
+    }
+}
+
+impl ModelFilesItemRef {
+    pub fn set_file(&mut self, cx: &mut Cx, file: File) {
+        
