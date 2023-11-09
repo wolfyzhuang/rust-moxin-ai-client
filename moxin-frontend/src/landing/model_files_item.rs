@@ -282,4 +282,12 @@ impl WidgetMatchEvent for ModelFilesItem {
 
 impl ModelFilesItemRef {
     pub fn set_file(&mut self, cx: &mut Cx, file: File) {
-        
+        let Some(mut item_widget) = self.borrow_mut() else {
+            return;
+        };
+
+        item_widget.file_id = Some(file.id.clone());
+
+        item_widget
+            .model_files_tags(id!(tags))
+            .set_tags(cx,
