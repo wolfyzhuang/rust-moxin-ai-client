@@ -290,4 +290,6 @@ impl ModelFilesItemRef {
 
         item_widget
             .model_files_tags(id!(tags))
-            .set_tags(cx,
+            .set_tags(cx, &file.tags);
+    }
+}
