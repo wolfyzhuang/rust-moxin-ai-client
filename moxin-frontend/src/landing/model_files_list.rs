@@ -160,3 +160,72 @@ impl ModelFilesList {
                                 progress_fill = {
                                     width: (progress_fill)
                                     draw_bg: {
+                                        color: (status_color),
+                                    }
+                                }
+                            }
+                            resume_download_button = {
+                                visible: (is_resume_download_visible)
+                            }
+                            retry_download_button = {
+                                visible: (is_retry_download_visible)
+                            }
+                            pause_download_button = {
+                                visible: (is_pause_download_visible)
+                            }
+                        }
+                        start_chat_button = { visible: false }
+                        resume_chat_button = { visible: false }
+                        download_button = { visible: false }
+                    }},
+                );
+            } else if files[i].downloaded {
+                if current_file_id
+                    .as_ref()
+                    .map_or(false, |id| *id == files[i].id)
+                {
+                    item_widget.apply_over(
+                        cx,
+                        live! { cell4 = {
+                            download_pending_controls = { visible: false }
+                            start_chat_button = { visible: false }
+                            resume_chat_button = { visible: true }
+                            download_button = { visible: false }
+                        }},
+                    );
+                } else {
+                    item_widget.apply_over(
+                        cx,
+                        live! { cell4 = {
+                            download_pending_controls = { visible: false }
+                            start_chat_button = { visible: true }
+                            resume_chat_button = { visible: false }
+                            download_button = { visible: false }
+                        }},
+                    );
+                }
+            } else {
+                item_widget.apply_over(
+                    cx,
+                    live! { cell4 = {
+                        download_pending_controls = { visible: false }
+                        start_chat_button = { visible: false }
+                        resume_chat_button = { visible: false }
+                        download_button = { visible: true }
+                    }},
+                );
+            };
+
+            let _ = item_widget.draw_all(cx, &mut Scope::empty());
+        }
+    }
+}
+
+impl ModelFilesListRef {
+    pub fn get_height(&mut self, cx: &mut Cx) -> f64 {
+        let Some(inner) = self.borrow_mut() else {
+            return 0.0;
+        };
+        inner.area.rect(cx).size.y
+    }
+}
