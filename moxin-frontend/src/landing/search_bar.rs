@@ -14,4 +14,15 @@ live_design! {
 
     ICON_SEARCH = dep("crate://self/resources/icons/search.svg")
 
-   
+    SearchBar = {{SearchBar}} {
+        width: Fill,
+        height: 200,
+
+        flow: Down,
+        spacing: 30,
+        align: {x: 0.5, y: 0.5},
+
+        show_bg: true,
+
+        draw_bg: {
+  
