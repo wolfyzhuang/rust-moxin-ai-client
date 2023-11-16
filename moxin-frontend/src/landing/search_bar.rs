@@ -25,4 +25,9 @@ live_design! {
         show_bg: true,
 
         draw_bg: {
-  
+            color: #EBFCFF,
+            instance color2: #CBE3E8,
+            fn get_color(self) -> vec4 {
+                let coef = self.rect_size.y / self.rect_size.x;
+
+                let distance_ve
