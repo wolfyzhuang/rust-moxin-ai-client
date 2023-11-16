@@ -30,4 +30,8 @@ live_design! {
             fn get_color(self) -> vec4 {
                 let coef = self.rect_size.y / self.rect_size.x;
 
-                let distance_ve
+                let distance_vec = self.pos - vec2(0.8, 1.1);
+                let norm_distance = length(vec2(distance_vec.x, distance_vec.y * coef) * 2.2);
+
+                if pow(norm_distance, 1.4) > 1.0 {
+                    retur
