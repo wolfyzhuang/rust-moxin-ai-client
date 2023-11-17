@@ -34,4 +34,11 @@ live_design! {
                 let norm_distance = length(vec2(distance_vec.x, distance_vec.y * coef) * 2.2);
 
                 if pow(norm_distance, 1.4) > 1.0 {
-                    retur
+                    return self.color;
+                } else {
+                    return mix(self.color2, self.color, pow(norm_distance, 1.4));
+                }
+            }
+
+            fn pixel(self) -> vec4 {
+       
