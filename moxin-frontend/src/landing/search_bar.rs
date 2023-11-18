@@ -49,3 +49,8 @@ live_design! {
             width: Fit,
             height: Fit,
             <Label> {
+                draw_text:{
+                    text_style: <REGULAR_FONT>{font_size: 13},
+                    color: #000
+                }
+                text: "Discover, download, and ru
