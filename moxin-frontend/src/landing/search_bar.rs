@@ -63,4 +63,11 @@ live_design! {
 
             show_bg: true,
             draw_bg: {
-          
+                color: #fff
+            }
+
+            padding: {top: 3, bottom: 3, left: 20, right: 20}
+            margin: {left: 30, right: 30}
+
+            spacing: 4,
+    
