@@ -53,4 +53,14 @@ live_design! {
                     text_style: <REGULAR_FONT>{font_size: 13},
                     color: #000
                 }
-                text: "Discover, download, and ru
+                text: "Discover, download, and run local LLMs"
+            }
+        }
+
+        input_container = <RoundedView> {
+            width: 800,
+            height: Fit,
+
+            show_bg: true,
+            draw_bg: {
+          
