@@ -70,4 +70,12 @@ live_design! {
             margin: {left: 30, right: 30}
 
             spacing: 4,
-    
+            align: {x: 0.0, y: 0.5},
+
+            draw_bg: {
+                radius: 9.0,
+                border_color: #D0D5DD,
+                border_width: 1.0,
+            }
+
+            
