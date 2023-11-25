@@ -78,4 +78,10 @@ live_design! {
                 border_width: 1.0,
             }
 
-            
+            <Icon> {
+                draw_icon: {
+                    svg_file: (ICON_SEARCH),
+                    fn get_color(self) -> vec4 {
+                        return #666;
+                    }
+        
