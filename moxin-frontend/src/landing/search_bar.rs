@@ -84,4 +84,11 @@ live_design! {
                     fn get_color(self) -> vec4 {
                         return #666;
                     }
-        
+                }
+                icon_walk: {width: 17, height: 17}
+            }
+
+            input = <MoxinTextInput> {
+                width: Fill,
+                height: Fit,
+                em
