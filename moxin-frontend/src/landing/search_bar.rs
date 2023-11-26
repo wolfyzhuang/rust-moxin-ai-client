@@ -91,4 +91,12 @@ live_design! {
             input = <MoxinTextInput> {
                 width: Fill,
                 height: Fit,
-                em
+                empty_message: "Search Model by Keyword"
+            }
+        }
+
+        search_sorting = <View> {
+            visible: false,
+            width: 300,
+            height: Fit,
+            margin: {left: 30, right:
