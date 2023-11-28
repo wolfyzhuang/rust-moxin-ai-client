@@ -99,4 +99,13 @@ live_design! {
             visible: false,
             width: 300,
             height: Fit,
-            margin: {left: 30, right:
+            margin: {left: 30, right: 30},
+            <Sorting> {}
+        }
+
+        animator: {
+            search_bar = {
+                default: expanded,
+                collapsed = {
+                    redraw: true,
+                
