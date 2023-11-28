@@ -108,4 +108,8 @@ live_design! {
                 default: expanded,
                 collapsed = {
                     redraw: true,
-                
+                    from: {all: Forward {duration: 0.3}}
+                    ease: ExpDecay {d1: 0.80, d2: 0.97}
+                    apply: { height: 100 }
+                }
+          
