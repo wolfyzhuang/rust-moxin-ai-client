@@ -116,4 +116,20 @@ live_design! {
                     redraw: true,
                     from: {all: Forward {duration: 0.3}}
                     ease: ExpDecay {d1: 0.80, d2: 0.97}
-                    apply: { heig
+                    apply: { height: 200 }
+                }
+            }
+        }
+    }
+}
+
+#[derive(Live, LiveHook, Widget)]
+pub struct SearchBar {
+    #[deref]
+    view: View,
+
+    #[animator]
+    animator: Animator,
+
+    #[rust]
+ 
