@@ -132,4 +132,14 @@ pub struct SearchBar {
     animator: Animator,
 
     #[rust]
- 
+    collapsed: bool,
+
+    #[rust]
+    search_timer: Timer,
+
+    #[live(0.3)]
+    search_debounce_time: f64,
+}
+
+impl Widget for SearchBar {
+    fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &
