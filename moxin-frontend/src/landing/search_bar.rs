@@ -147,4 +147,10 @@ impl Widget for SearchBar {
         self.widget_match_event(cx, event, scope);
         if self.animator_handle_event(cx, event).must_redraw() {
             self.redraw(cx);
-    
+        }
+
+        if self.search_timer.is_event(event).is_some() {
+            self.search_timer = Timer::default();
+
+            let input = self.text_input(id!(input));
+            let keywords =
