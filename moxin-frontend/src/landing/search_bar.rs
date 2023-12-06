@@ -153,4 +153,9 @@ impl Widget for SearchBar {
             self.search_timer = Timer::default();
 
             let input = self.text_input(id!(input));
-            let keywords =
+            let keywords = input.text();
+            const MIN_SEARCH_LENGTH: usize = 2;
+
+            if keywords.len() > MIN_SEARCH_LENGTH {
+                let widget_uid = self.widget_uid();
+                cx.widget_acti
