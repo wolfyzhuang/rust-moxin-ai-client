@@ -158,4 +158,9 @@ impl Widget for SearchBar {
 
             if keywords.len() > MIN_SEARCH_LENGTH {
                 let widget_uid = self.widget_uid();
-                cx.widget_acti
+                cx.widget_action(
+                    widget_uid,
+                    &scope.path,
+                    StoreAction::Search(keywords.to_string()),
+                );
+            } else
