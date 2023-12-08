@@ -163,4 +163,11 @@ impl Widget for SearchBar {
                     &scope.path,
                     StoreAction::Search(keywords.to_string()),
                 );
-            } else
+            } else if keywords.len() == 0 {
+                let widget_uid = self.widget_uid();
+                cx.widget_action(widget_uid, &scope.path, StoreAction::ResetSearch);
+            }
+        }
+    }
+
+    fn dr
