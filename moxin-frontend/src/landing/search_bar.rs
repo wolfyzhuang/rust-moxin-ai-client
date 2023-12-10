@@ -170,4 +170,10 @@ impl Widget for SearchBar {
         }
     }
 
-    fn dr
+    fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
+        self.view.draw_walk(cx, scope, walk)
+    }
+}
+
+impl WidgetMatchEvent for SearchBar {
+    fn handle_actions(&mut 
