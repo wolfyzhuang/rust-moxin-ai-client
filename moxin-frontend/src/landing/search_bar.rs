@@ -180,4 +180,9 @@ impl WidgetMatchEvent for SearchBar {
         let input = self.text_input(id!(input));
 
         if let Some(keywords) = input.returned(actions) {
-         
+            if keywords.len() > 0 {
+                let widget_uid = self.widget_uid();
+                cx.widget_action(
+                    widget_uid,
+                    &scope.path,
+                    StoreA
