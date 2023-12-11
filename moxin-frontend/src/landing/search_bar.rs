@@ -176,4 +176,8 @@ impl Widget for SearchBar {
 }
 
 impl WidgetMatchEvent for SearchBar {
-    fn handle_actions(&mut 
+    fn handle_actions(&mut self, cx: &mut Cx, actions: &Actions, scope: &mut Scope) {
+        let input = self.text_input(id!(input));
+
+        if let Some(keywords) = input.returned(actions) {
+         
