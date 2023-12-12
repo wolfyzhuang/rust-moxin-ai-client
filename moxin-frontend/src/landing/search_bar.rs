@@ -185,4 +185,8 @@ impl WidgetMatchEvent for SearchBar {
                 cx.widget_action(
                     widget_uid,
                     &scope.path,
-                    StoreA
+                    StoreAction::Search(keywords.to_string()),
+                );
+            } else {
+                let widget_uid = self.widget_uid();
+                cx.widget_action(widget_uid, &scope.path, StoreAction::R
