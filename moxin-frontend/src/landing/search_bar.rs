@@ -189,4 +189,10 @@ impl WidgetMatchEvent for SearchBar {
                 );
             } else {
                 let widget_uid = self.widget_uid();
-                cx.widget_action(widget_uid, &scope.path, StoreAction::R
+                cx.widget_action(widget_uid, &scope.path, StoreAction::ResetSearch);
+            }
+        }
+
+        if let Some(_) = input.changed(actions) {
+            cx.stop_timer(self.search_timer);
+            self.search_timer = cx.start_
