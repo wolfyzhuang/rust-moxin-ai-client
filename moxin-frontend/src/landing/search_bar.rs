@@ -202,4 +202,14 @@ impl WidgetMatchEvent for SearchBar {
 
 impl SearchBarRef {
     pub fn collapse(&self, cx: &mut Cx, selected_sort: SortCriteria) {
-        let Some(mut inner) = self.borrow_mut() e
+        let Some(mut inner) = self.borrow_mut() else {
+            return;
+        };
+        if inner.collapsed {
+            return;
+        }
+        inner.collapsed = true;
+
+        inner.apply_over(
+            cx,
+            live!
