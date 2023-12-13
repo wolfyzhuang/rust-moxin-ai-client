@@ -195,4 +195,11 @@ impl WidgetMatchEvent for SearchBar {
 
         if let Some(_) = input.changed(actions) {
             cx.stop_timer(self.search_timer);
-            self.search_timer = cx.start_
+            self.search_timer = cx.start_timeout(self.search_debounce_time);
+        }
+    }
+}
+
+impl SearchBarRef {
+    pub fn collapse(&self, cx: &mut Cx, selected_sort: SortCriteria) {
+        let Some(mut inner) = self.borrow_mut() e
