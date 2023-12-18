@@ -212,4 +212,10 @@ impl SearchBarRef {
 
         inner.apply_over(
             cx,
-            live!
+            live! {
+                flow: Right,
+                title = { visible: false }
+                align: {x: 0.0, y: 0.5},
+                padding: {left: 20},
+                spacing: 80,
+                i
