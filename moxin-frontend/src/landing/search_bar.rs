@@ -225,4 +225,10 @@ impl SearchBarRef {
 
         inner
             .sorting(id!(search_sorting))
-            .set_selec
+            .set_selected_item(selected_sort);
+        inner.animator_play(cx, id!(search_bar.collapsed));
+    }
+
+    pub fn expand(&self, cx: &mut Cx) {
+        let Some(mut inner) = self.borrow_mut() else {
+            return;
