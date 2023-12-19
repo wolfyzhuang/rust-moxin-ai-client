@@ -218,4 +218,11 @@ impl SearchBarRef {
                 align: {x: 0.0, y: 0.5},
                 padding: {left: 20},
                 spacing: 80,
-                i
+                input_container = { width: Fill }
+                search_sorting = { visible: true }
+            },
+        );
+
+        inner
+            .sorting(id!(search_sorting))
+            .set_selec
