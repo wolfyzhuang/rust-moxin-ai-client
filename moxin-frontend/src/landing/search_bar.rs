@@ -232,3 +232,13 @@ impl SearchBarRef {
     pub fn expand(&self, cx: &mut Cx) {
         let Some(mut inner) = self.borrow_mut() else {
             return;
+        };
+        if !inner.collapsed {
+            return;
+        }
+        inner.collapsed = false;
+
+        inner.apply_over(
+            cx,
+            live! {
+            
