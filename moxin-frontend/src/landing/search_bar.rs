@@ -246,4 +246,11 @@ impl SearchBarRef {
                 align: {x: 0.5, y: 0.5},
                 padding: {left: 0},
                 spacing: 50,
-                input_container = 
+                input_container = { width: 800 }
+                search_sorting = { visible: false }
+            },
+        );
+
+        inner.animator_play(cx, id!(search_bar.expanded));
+    }
+}
