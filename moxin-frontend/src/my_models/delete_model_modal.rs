@@ -205,3 +205,22 @@ impl WidgetMatchEvent for DeleteModelModal {
                 cx.widget_action(widget_uid, &scope.path, ModalAction::CloseModal);
             }
         }
+
+        if let Some(fe) = self
+            .view(id!(wrapper.body.actions.cancel_button))
+            .finger_up(actions)
+        {
+            if fe.was_tap() {
+                cx.widget_action(widget_uid, &scope.path, ModalAction::CloseModal);
+            }
+        }
+    }
+}
+
+impl DeleteModelModalRef {
+    pub fn set_file_id(&mut self, file_id: FileID) {
+        if let Some(mut inner) = self.borrow_mut() {
+            inner.file_id = file_id;
+        }
+    }
+}
