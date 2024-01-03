@@ -13,4 +13,7 @@ live_design! {
     import crate::shared::widgets::*;
 
     ICON_START_CHAT = dep("crate://self/resources/icons/start_chat.svg")
-    ICON_PLAY = dep("c
+    ICON_PLAY = dep("crate://self/resources/icons/play_arrow.svg")
+    ICON_INFO = dep("crate://self/resources/icons/info.svg")
+    ICON_DELETE = dep("crate://self/resources/icons/delete.svg")
+    MODEL_CTA_
