@@ -16,4 +16,18 @@ live_design! {
     ICON_PLAY = dep("crate://self/resources/icons/play_arrow.svg")
     ICON_INFO = dep("crate://self/resources/icons/info.svg")
     ICON_DELETE = dep("crate://self/resources/icons/delete.svg")
-    MODEL_CTA_
+    MODEL_CTA_COLOR = #127487
+
+    DownloadedFilesRowButton = <MoxinButton> {
+        height: 40
+
+        draw_bg: {
+            border_color: #ccc,
+        }
+
+        draw_icon: {
+            color: #087443;
+        }
+    }
+
+    Downl
