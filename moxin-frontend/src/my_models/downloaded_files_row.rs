@@ -30,4 +30,9 @@ live_design! {
         }
     }
 
-    Downl
+    DownloadedFilesRow = {{DownloadedFilesRow}} {
+        // Heads-up: rows break the Portal List without fixed height
+        height: 85,
+        flow: Down
+        width: Fill
+        align: {x: 0.0, y: 
