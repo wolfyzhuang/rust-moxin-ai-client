@@ -35,4 +35,13 @@ live_design! {
         height: 85,
         flow: Down
         width: Fill
-        align: {x: 0.0, y: 
+        align: {x: 0.0, y: 0.5}
+
+        show_bg: true
+        draw_bg: {
+            color: #FFF;
+        }
+
+        separator_line = <Line> {}
+        h_wrapper = <View> {
+            flow: Right
