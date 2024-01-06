@@ -45,3 +45,10 @@ live_design! {
         separator_line = <Line> {}
         h_wrapper = <View> {
             flow: Right
+            width: Fit
+            padding: {top: 10, bottom: 10, left: 20, right: 20}
+            spacing: 30
+            show_bg: true
+            draw_bg: {
+                color: #FFF;
+ 
