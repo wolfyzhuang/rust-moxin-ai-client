@@ -51,4 +51,13 @@ live_design! {
             show_bg: true
             draw_bg: {
                 color: #FFF;
- 
+            }
+
+            model_file = <View> {
+                flow: Down
+                width: 600
+
+                h_wrapper = <View> {
+                    flow: Right
+                    width: Fill
+                   
