@@ -60,4 +60,9 @@ live_design! {
                 h_wrapper = <View> {
                     flow: Right
                     width: Fill
-                   
+                    spacing: 15
+                    name_tag = <View> {
+                        width: Fit
+                        align: {x: 0.0, y: 0.5}
+                        name = <Label> {
+                      
