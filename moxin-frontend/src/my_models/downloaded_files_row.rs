@@ -65,4 +65,9 @@ live_design! {
                         width: Fit
                         align: {x: 0.0, y: 0.5}
                         name = <Label> {
-                      
+                            width: Fit
+                            draw_text: {
+                                text_style: <BOLD_FONT>{font_size: 9}
+                                color: #x0
+                            }
+        
