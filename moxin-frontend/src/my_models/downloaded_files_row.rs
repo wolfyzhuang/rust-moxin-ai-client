@@ -70,4 +70,10 @@ live_design! {
                                 text_style: <BOLD_FONT>{font_size: 9}
                                 color: #x0
                             }
-        
+                        }
+                    }
+
+                    base_model_tag = <View> {
+                        width: Fit
+                        align: {x: 0.0, y: 0.5}
+                    
