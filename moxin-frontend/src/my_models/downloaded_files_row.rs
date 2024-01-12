@@ -76,4 +76,9 @@ live_design! {
                     base_model_tag = <View> {
                         width: Fit
                         align: {x: 0.0, y: 0.5}
-                    
+                        base_model = <AttributeTag> {
+                            draw_bg: { color: #F0D6F5 },
+                        }
+                    }
+                    parameters_tag = <View> {
+ 
