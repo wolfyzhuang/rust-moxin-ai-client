@@ -81,4 +81,8 @@ live_design! {
                         }
                     }
                     parameters_tag = <View> {
- 
+                        width: Fit
+                        align: {x: 0.0, y: 0.5}
+                        parameters = <AttributeTag> {
+                            draw_bg: { color: #D4E6F7 },
+     
