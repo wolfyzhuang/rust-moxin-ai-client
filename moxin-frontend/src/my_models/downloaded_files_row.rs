@@ -90,4 +90,9 @@ live_design! {
                 }
                 model_version_tag = <View> {
                     width: Fit
-                    alig
+                    align: {x: 0.0, y: 0.5}
+                    version = <Label> {
+                        width: Fit
+                        draw_text: {
+                            wrap: Ellipsis
+ 
