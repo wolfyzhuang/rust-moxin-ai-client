@@ -95,4 +95,9 @@ live_design! {
                         width: Fit
                         draw_text: {
                             wrap: Ellipsis
- 
+                            text_style: <REGULAR_FONT>{font_size: 9}
+                            color: #667085
+                        }
+                    }
+                }
+  
