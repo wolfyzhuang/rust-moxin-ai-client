@@ -100,4 +100,11 @@ live_design! {
                         }
                     }
                 }
-  
+            }
+
+            file_size_tag = <View> {
+                width: 100
+                align: {x: 0.0, y: 0.5}
+                file_size = <Label> {
+                    draw_text: {
+                        t
