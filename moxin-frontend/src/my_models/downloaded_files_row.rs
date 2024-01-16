@@ -107,4 +107,12 @@ live_design! {
                 align: {x: 0.0, y: 0.5}
                 file_size = <Label> {
                     draw_text: {
-                        t
+                        text_style: <REGULAR_FONT>{font_size: 9}
+                        color: #x0
+                    }
+                }
+            }
+
+            date_added_tag = <View> {
+                width: 100
+                
