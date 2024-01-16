@@ -115,4 +115,8 @@ live_design! {
 
             date_added_tag = <View> {
                 width: 100
-                
+                align: {x: 0.0, y: 0.5}
+                date_added = <Label> {
+                    draw_text: {
+                        text_style: <REGULAR_FONT>{font_size: 9}
+                    
