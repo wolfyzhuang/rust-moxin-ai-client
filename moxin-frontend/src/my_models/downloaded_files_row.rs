@@ -128,4 +128,9 @@ live_design! {
                 width: 250
                 flow: Right
                 spacing: 10
-  
+                align: {x: 0.0, y: 0.5}
+
+                start_chat_button = <DownloadedFilesRowButton> {
+                    width: 140
+                    text: "Chat with Model",
+                   
