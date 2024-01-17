@@ -119,4 +119,13 @@ live_design! {
                 date_added = <Label> {
                     draw_text: {
                         text_style: <REGULAR_FONT>{font_size: 9}
-                    
+                        color: #x0
+                    }
+                }
+            }
+
+            actions = <View> {
+                width: 250
+                flow: Right
+                spacing: 10
+  
