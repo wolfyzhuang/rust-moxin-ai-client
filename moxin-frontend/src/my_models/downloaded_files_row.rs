@@ -138,4 +138,9 @@ live_design! {
                         text_style: <REGULAR_FONT>{font_size: 9}
                     }
                     draw_icon: {
-   
+                        svg_file: (ICON_START_CHAT)
+                        color: (MODEL_CTA_COLOR)
+                    }
+                }
+
+                resume_chat_button = <Downl
