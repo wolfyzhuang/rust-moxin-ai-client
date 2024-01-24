@@ -143,4 +143,10 @@ live_design! {
                     }
                 }
 
-                resume_chat_button = <Downl
+                resume_chat_button = <DownloadedFilesRowButton> {
+                    width: 140
+                    visible: false
+                    draw_bg: {
+                        color: (MODEL_CTA_COLOR)
+                    }
+             
