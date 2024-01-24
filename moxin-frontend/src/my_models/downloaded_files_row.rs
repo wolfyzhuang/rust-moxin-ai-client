@@ -149,4 +149,10 @@ live_design! {
                     draw_bg: {
                         color: (MODEL_CTA_COLOR)
                     }
-             
+                    text: "Resume Chat",
+                    draw_text: {
+                        color: #fff
+                        text_style: <BOLD_FONT>{font_size: 9}
+                    }
+                    draw_icon: {
+   
