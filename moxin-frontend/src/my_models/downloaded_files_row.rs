@@ -162,4 +162,8 @@ live_design! {
 
                 <View> { width: Fill, height: Fit }
 
-                in
+                info_button = <DownloadedFilesRowButton> {
+                    width: 40
+                    draw_icon: {
+                        svg_file: (ICON_INFO),
+                        color: #009
