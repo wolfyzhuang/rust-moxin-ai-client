@@ -155,4 +155,11 @@ live_design! {
                         text_style: <BOLD_FONT>{font_size: 9}
                     }
                     draw_icon: {
-   
+                        svg_file: (ICON_PLAY)
+                        color: #fff
+                    }
+                }
+
+                <View> { width: Fill, height: Fit }
+
+                in
