@@ -166,4 +166,11 @@ live_design! {
                     width: 40
                     draw_icon: {
                         svg_file: (ICON_INFO),
-                        color: #009
+                        color: #0099FF
+                    }
+                }
+
+                delete_button = <DownloadedFilesRowButton> {
+                    width: 40
+                    draw_icon: {
+                    
