@@ -173,4 +173,13 @@ live_design! {
                 delete_button = <DownloadedFilesRowButton> {
                     width: 40
                     draw_icon: {
-                    
+                        svg_file: (ICON_DELETE),
+                        color: #B42318
+                    }
+                }
+            }
+        }
+    }
+}
+
+pub struct DownloadedFilesRowPr
