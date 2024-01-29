@@ -193,4 +193,10 @@ pub struct DownloadedFilesRow {
     #[deref]
     view: View,
 
-    #[
+    #[rust]
+    file_id: Option<FileID>,
+}
+
+impl Widget for DownloadedFilesRow {
+    fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+        self.view.handle_event(cx, 
