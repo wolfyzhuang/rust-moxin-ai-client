@@ -182,4 +182,15 @@ live_design! {
     }
 }
 
-pub struct DownloadedFilesRowPr
+pub struct DownloadedFilesRowProps {
+    pub downloaded_file: DownloadedFile,
+    pub show_separator: bool,
+    pub show_resume: bool,
+}
+
+#[derive(Live, LiveHook, Widget)]
+pub struct DownloadedFilesRow {
+    #[deref]
+    view: View,
+
+    #[
