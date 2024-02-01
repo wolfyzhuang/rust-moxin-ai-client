@@ -204,4 +204,9 @@ impl Widget for DownloadedFilesRow {
     }
 
     fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
-        let props = scope.pro
+        let props = scope.props.get::<DownloadedFilesRowProps>().unwrap();
+        let downloaded_file = &props.downloaded_file;
+
+        // Name tag
+        let name = human_readable_name(&downloaded_file.file.name);
+        self.label(id!(h_wrapper.mode
