@@ -215,4 +215,11 @@ impl Widget for DownloadedFilesRow {
         // Base model tag
         let base_model = dash_if_empty(&downloaded_file.model.architecture);
         self.label(id!(h_wrapper
-            .mode
+            .model_file
+            .base_model_tag
+            .base_model
+            .attr_name))
+            .set_text(&base_model);
+
+        // Parameters tag
+        let parameters =
