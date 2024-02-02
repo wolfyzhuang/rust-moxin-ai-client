@@ -209,4 +209,10 @@ impl Widget for DownloadedFilesRow {
 
         // Name tag
         let name = human_readable_name(&downloaded_file.file.name);
-        self.label(id!(h_wrapper.mode
+        self.label(id!(h_wrapper.model_file.h_wrapper.name_tag.name))
+            .set_text(&name);
+
+        // Base model tag
+        let base_model = dash_if_empty(&downloaded_file.model.architecture);
+        self.label(id!(h_wrapper
+            .mode
