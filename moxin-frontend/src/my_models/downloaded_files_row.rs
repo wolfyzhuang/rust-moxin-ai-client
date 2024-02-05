@@ -230,4 +230,7 @@ impl Widget for DownloadedFilesRow {
             .attr_name))
             .set_text(&parameters);
 
- 
+        // Version tag
+        let filename = format!("{}/{}", downloaded_file.model.name, downloaded_file.file.name);
+        self.label(id!(h_wrapper.model_file.model_version_tag.version))
+     
