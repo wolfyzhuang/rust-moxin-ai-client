@@ -222,4 +222,12 @@ impl Widget for DownloadedFilesRow {
             .set_text(&base_model);
 
         // Parameters tag
-        let parameters =
+        let parameters = dash_if_empty(&downloaded_file.model.size);
+        self.label(id!(h_wrapper
+            .model_file
+            .parameters_tag
+            .parameters
+            .attr_name))
+            .set_text(&parameters);
+
+ 
