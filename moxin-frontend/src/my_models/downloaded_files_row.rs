@@ -243,4 +243,8 @@ impl Widget for DownloadedFilesRow {
 
         // Added date tag
         let formatted_date = downloaded_file.downloaded_at.format("%d/%m/%Y").to_string();
-        self.label(id
+        self.label(id!(h_wrapper.date_added_tag.date_added))
+            .set_text(&formatted_date);
+
+        self.button(id!(start_chat_button)).set_visible(!props.show_resume);
+        self.button(id!(re
