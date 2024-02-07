@@ -238,4 +238,9 @@ impl Widget for DownloadedFilesRow {
         // File size tag
         let file_size =
             format_model_size(&downloaded_file.file.size).unwrap_or("-".to_string());
-        self.label(id!(h_wr
+        self.label(id!(h_wrapper.file_size_tag.file_size))
+            .set_text(&file_size);
+
+        // Added date tag
+        let formatted_date = downloaded_file.downloaded_at.format("%d/%m/%Y").to_string();
+        self.label(id
