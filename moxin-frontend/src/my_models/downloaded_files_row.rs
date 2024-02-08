@@ -247,4 +247,8 @@ impl Widget for DownloadedFilesRow {
             .set_text(&formatted_date);
 
         self.button(id!(start_chat_button)).set_visible(!props.show_resume);
-        self.button(id!(re
+        self.button(id!(resume_chat_button)).set_visible(props.show_resume);
+
+        self.view(id!(separator_line)).set_visible(props.show_separator);
+
+        self.view.draw_walk(c
