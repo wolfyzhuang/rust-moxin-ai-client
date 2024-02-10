@@ -251,4 +251,12 @@ impl Widget for DownloadedFilesRow {
 
         self.view(id!(separator_line)).set_visible(props.show_separator);
 
-        self.view.draw_walk(c
+        self.view.draw_walk(cx, scope, walk)
+    }
+}
+
+impl WidgetMatchEvent for DownloadedFilesRow {
+    fn handle_actions(&mut self, cx: &mut Cx, actions: &Actions, scope: &mut Scope) {
+        let widget_uid = self.widget_uid();
+
+        if s
