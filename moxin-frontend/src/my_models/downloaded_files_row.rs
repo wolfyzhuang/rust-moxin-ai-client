@@ -263,4 +263,11 @@ impl WidgetMatchEvent for DownloadedFilesRow {
             if let Some(file_id) = &self.file_id {
                 cx.widget_action(
                     widget_uid,
-                    &s
+                    &scope.path,
+                    ChatAction::Start(file_id.clone()),
+                );
+            }
+        }
+
+        if self.button(id!(resume_chat_button)).clicked(actions) {
+            if let
