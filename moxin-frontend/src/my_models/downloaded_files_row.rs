@@ -282,4 +282,9 @@ impl WidgetMatchEvent for DownloadedFilesRow {
         if self.button(id!(info_button)).clicked(actions) {
             if let Some(file_id) = &self.file_id {
                 cx.widget_action(
-                   
+                    widget_uid,
+                    &scope.path,
+                    ModelInfoAction::FileSelected(file_id.clone()),
+                );
+                cx.widget_action(
+             
