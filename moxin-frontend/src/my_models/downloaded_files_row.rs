@@ -287,4 +287,11 @@ impl WidgetMatchEvent for DownloadedFilesRow {
                     ModelInfoAction::FileSelected(file_id.clone()),
                 );
                 cx.widget_action(
-             
+                    widget_uid,
+                    &scope.path,
+                    ModalAction::ShowModalView(live_id!(model_info_modal_view)),
+                );
+            }
+        }
+
+        if self.button(id!(delete_button)).click
