@@ -294,4 +294,9 @@ impl WidgetMatchEvent for DownloadedFilesRow {
             }
         }
 
-        if self.button(id!(delete_button)).click
+        if self.button(id!(delete_button)).clicked(actions) {
+            if let Some(file_id) = &self.file_id {
+                cx.widget_action(
+                    widget_uid,
+                    &scope.path,
+                    DeleteModelAction::FileSel
