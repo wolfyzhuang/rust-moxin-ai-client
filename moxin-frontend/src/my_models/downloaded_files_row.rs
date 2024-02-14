@@ -304,4 +304,13 @@ impl WidgetMatchEvent for DownloadedFilesRow {
                 cx.widget_action(
                     widget_uid,
                     &scope.path,
-                    ModalAction::ShowModalView(live_id!
+                    ModalAction::ShowModalView(live_id!(delete_model_modal_view)),
+                );
+            }
+        }
+    }
+}
+
+impl DownloadedFilesRowRef {
+    pub fn set_file_id(&mut self, file_id: FileID) {
+        let Some(mut inner) = self.bo
