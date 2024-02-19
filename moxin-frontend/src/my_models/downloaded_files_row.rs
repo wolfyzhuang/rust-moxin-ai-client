@@ -321,4 +321,12 @@ impl DownloadedFilesRowRef {
 }
 
 /// Removes dashes, file extension, and capitalizes the first letter of each word.
-fn human_
+fn human_readable_name(name: &str) -> String {
+    let name = name
+        .to_lowercase()
+        .replace("-", " ")
+        .replace(".gguf", "")
+        .replace("chat", "");
+
+    let name = name
+        .sp
