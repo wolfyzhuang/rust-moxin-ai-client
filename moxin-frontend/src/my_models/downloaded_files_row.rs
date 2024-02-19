@@ -313,4 +313,12 @@ impl WidgetMatchEvent for DownloadedFilesRow {
 
 impl DownloadedFilesRowRef {
     pub fn set_file_id(&mut self, file_id: FileID) {
-        let Some(mut inner) = self.bo
+        let Some(mut inner) = self.borrow_mut() else {
+            return;
+        };
+        inner.file_id = Some(file_id);
+    }
+}
+
+/// Removes dashes, file extension, and capitalizes the first letter of each word.
+fn human_
