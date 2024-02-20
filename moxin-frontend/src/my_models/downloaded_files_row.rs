@@ -329,4 +329,9 @@ fn human_readable_name(name: &str) -> String {
         .replace("chat", "");
 
     let name = name
-        .sp
+        .split_whitespace()
+        .map(|word| {
+            let mut chars = word.chars();
+            match chars.next() {
+                None => String::new(),
+                Some(first_char) => f
