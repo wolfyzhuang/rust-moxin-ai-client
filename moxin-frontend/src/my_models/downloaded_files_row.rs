@@ -343,4 +343,10 @@ fn human_readable_name(name: &str) -> String {
     name
 }
 
-fn dash_if_empty(input: &str) -> &st
+fn dash_if_empty(input: &str) -> &str {
+    if input.is_empty() {
+        "-"
+    } else {
+        input
+    }
+}
