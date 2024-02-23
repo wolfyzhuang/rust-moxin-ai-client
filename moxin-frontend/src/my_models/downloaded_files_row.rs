@@ -334,4 +334,13 @@ fn human_readable_name(name: &str) -> String {
             let mut chars = word.chars();
             match chars.next() {
                 None => String::new(),
-                Some(first_char) => f
+                Some(first_char) => first_char.to_uppercase().collect::<String>() + chars.as_str(),
+            }
+        })
+        .collect::<Vec<String>>()
+        .join(" ");
+
+    name
+}
+
+fn dash_if_empty(input: &str) -> &st
