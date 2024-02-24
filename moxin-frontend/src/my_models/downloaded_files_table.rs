@@ -131,3 +131,74 @@ impl Widget for DownloadedFilesTable {
 
                         item.as_downloaded_files_row()
                             .set_file_id(file_data.file.id.clone());
+
+                        let mut is_model_file_loaded = false;
+                        if let Some(file_id) = &current_chat_file_id {
+                            is_model_file_loaded = *file_id == file_data.file.id;
+                        }
+
+                        let props = DownloadedFilesRowProps {
+                            downloaded_file: file_data.clone(),
+                            show_separator: item_id != last_item_id,
+                            show_resume: is_model_file_loaded,
+                        };
+                        let mut scope = Scope::with_props(&props);
+                        item.draw_all(cx, &mut scope);
+                    }
+                }
+            }
+        }
+        DrawStep::done()
+    }
+}
+
+impl WidgetMatchEvent for DownloadedFilesTable {
+    fn handle_actions(&mut self, cx: &mut Cx, actions: &Actions, scope: &mut Scope) {
+        for action in actions.iter() {
+            match action.cast() {
+                MyModelsSearchAction::Search(keywords) => {
+                    self.filter_by_keywords(cx, scope, &keywords);
+                }
+                MyModelsSearchAction::Reset => {
+                    self.reset_results(cx, scope);
+                }
+                _ => {}
+            }
+        }
+    }
+}
+
+impl DownloadedFilesTable {
+    fn fetch_results(&mut self, scope: &mut Scope) {
+        self.current_results = scope.data.get::<Store>().unwrap().downloaded_files.clone();
+        self.latest_store_fetch_len = self.current_results.len();
+    }
+
+    fn filter_by_keywords(&mut self, cx: &mut Cx, scope: &mut Scope, keywords: &str) {
+        let keywords = keywords.to_lowercase();
+        self.current_results = scope.data.get::<Store>().unwrap().downloaded_files.clone();
+        self.latest_store_fetch_len = self.current_results.len();
+
+        self.current_results.retain(|f| {
+            f.file.name.to_lowercase().contains(&keywords)
+                || f.model.name.to_lowercase().contains(&keywords)
+        });
+
+        self.search_status = SearchStatus::Filtered(keywords);
+        self.redraw(cx);
+    }
+
+    fn reset_results(&mut self, cx: &mut Cx, scope: &mut Scope) {
+        self.current_results = scope.data.get::<Store>().unwrap().downloaded_files.clone();
+
+        self.search_status = SearchStatus::Idle;
+        self.redraw(cx);
+    }
+}
+
+#[derive(Clone, Default, Debug)]
+enum SearchStatus {
+    #[default]
+    Idle,
+    Filtered(String),
+}
