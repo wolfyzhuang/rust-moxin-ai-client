@@ -10,4 +10,6 @@ pub fn live_design(cx: &mut Cx) {
     my_models_screen::live_design(cx);
     downloaded_files_table::live_design(cx);
     downloaded_files_row::live_design(cx);
-    delete_model_mo
+    delete_model_modal::live_design(cx);
+    model_info_modal::live_design(cx);
+}
