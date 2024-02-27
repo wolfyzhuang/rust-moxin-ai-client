@@ -155,3 +155,118 @@ live_design! {
                         draw_bg: {
                             instance radius: 2.0,
                             border_color: #D0D5DD,
+                            border_width: 1.2,
+                            color: #F5FEFF,
+                        }
+
+                        <Label> {
+                            text: "Model Card on Hugging Face"
+                            draw_text:{
+                                text_style: <REGULAR_FONT>{font_size: 10},
+                                color: #x0
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[derive(Live, LiveHook, Widget)]
+pub struct ModelInfoModal {
+    #[deref]
+    view: View,
+    #[rust]
+    file_id: String,
+    #[rust]
+    model_id: String,
+    #[rust]
+    stringified_model_data: String,
+}
+
+impl Widget for ModelInfoModal {
+    fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+        self.view.handle_event(cx, event, scope);
+        self.widget_match_event(cx, event, scope);
+    }
+
+    fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
+        let downloaded_files = &scope.data.get::<Store>().unwrap().downloaded_files;
+        let downloaded_file = downloaded_files
+            .iter()
+            .find(|f| f.file.id.eq(&self.file_id))
+            .expect("Downloaded file not found");
+
+        self.model_id = downloaded_file.model.id.clone();
+
+        // filename
+        self.label(id!(title.filename))
+            .set_text(&downloaded_file.file.name);
+
+        // file path
+        if let Some(path) = &downloaded_file.file.downloaded_path {
+            self.html(id!(file_dir.path))
+                .set_text(&format!("<pre>{}</pre>", path));
+        } else {
+            self.view(id!(file_dir)).set_visible(false);
+        }
+
+        // metadata
+        self.stringified_model_data = serde_json::to_string_pretty(&downloaded_file.model)
+            .expect("Could not serialize model data into json");
+        let metadata = format!("<pre>{}</pre>", self.stringified_model_data);
+
+        self.html(id!(wrapper.body.metadata)).set_text(&metadata);
+
+        self.view
+            .draw_walk(cx, scope, walk.with_abs_pos(DVec2 { x: 0., y: 0. }))
+    }
+}
+
+impl WidgetMatchEvent for ModelInfoModal {
+    fn handle_actions(&mut self, cx: &mut Cx, actions: &Actions, scope: &mut Scope) {
+        let widget_uid = self.widget_uid();
+
+        if let Some(fe) = self.view(id!(close_button)).finger_up(actions) {
+            if fe.was_tap() {
+                cx.widget_action(widget_uid, &scope.path, ModalAction::CloseModal);
+            }
+        }
+
+        if let Some(fe) = self
+            .view(id!(wrapper.body.actions.copy_button))
+            .finger_up(actions)
+        {
+            if fe.was_tap() {
+                cx.copy_to_clipboard(&self.stringified_model_data);
+            }
+        }
+
+        if let Some(fe) = self
+            .view(id!(wrapper.body.actions.external_link))
+            .finger_up(actions)
+        {
+            if fe.was_tap() {
+                let model_url = hugging_face_model_url(&self.model_id);
+                if let Err(e) = robius_open::Uri::new(&model_url).open() {
+                    error!("Error opening URL: {:?}", e);
+                }
+            }
+        }
+    }
+}
+
+impl ModelInfoModalRef {
+    pub fn set_file_id(&mut self, file_id: ModelID) {
+        if let Some(mut inner) = self.borrow_mut() {
+            inner.file_id = file_id;
+        }
+    }
+}
+
+#[derive(Clone, DefaultNone, Debug)]
+pub enum ModelInfoAction {
+    FileSelected(FileID),
+    None,
+}
