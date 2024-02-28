@@ -187,3 +187,147 @@ live_design! {
         height: Fit
 
         <PopupDialog> {
+            <NotificationIcons> {}
+            <NotificationContent> {}
+            close_button = <PopupCloseButton> {}
+        }
+    }
+
+}
+
+#[derive(Clone, DefaultNone, Eq, Hash, PartialEq, Debug)]
+pub enum PopupAction {
+    None,
+    NavigateToMyModels,
+}
+
+#[derive(Default)]
+pub enum DownloadResult {
+    #[default]
+    Success,
+    Failure,
+}
+
+#[derive(Live, LiveHook, Widget)]
+pub struct DownloadNotificationPopup {
+    #[deref]
+    view: View,
+    #[layout]
+    layout: Layout,
+
+    #[rust]
+    download_result: DownloadResult,
+    #[rust]
+    file_id: Option<FileID>,
+    #[rust]
+    filename: String,
+}
+
+impl Widget for DownloadNotificationPopup {
+    fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+        self.view.handle_event(cx, event, scope);
+        self.widget_match_event(cx, event, scope);
+    }
+
+    fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
+        let _ = self
+            .view
+            .draw_walk(cx, scope, walk.with_abs_pos(DVec2 { x: 0., y: 0. }));
+
+        DrawStep::done()
+    }
+}
+
+impl WidgetMatchEvent for DownloadNotificationPopup {
+    fn handle_actions(&mut self, cx: &mut Cx, actions: &Actions, scope: &mut Scope) {
+        let widget_uid = self.widget_uid();
+
+        if let Some(fe) = self.view(id!(close_button)).finger_up(actions) {
+            if fe.was_tap() {
+                cx.widget_action(widget_uid, &scope.path, ModalAction::CloseModal);
+            }
+        }
+
+        if self
+            .link_label(id!(view_in_my_models_link))
+            .clicked(actions)
+        {
+            // TODO: Abstract the navigation actions on a single enum for the whole app.
+            cx.widget_action(widget_uid, &scope.path, PopupAction::NavigateToMyModels);
+            cx.widget_action(widget_uid, &scope.path, ModalAction::CloseModal);
+        }
+
+        if self.link_label(id!(retry_link)).clicked(actions) {
+            let Some(file_id) = &self.file_id else { return };
+            cx.widget_action(
+                widget_uid,
+                &scope.path,
+                DownloadAction::Play(file_id.clone()),
+            );
+            cx.widget_action(widget_uid, &scope.path, ModalAction::CloseModal);
+        }
+
+        if self.link_label(id!(cancel_link)).clicked(actions) {
+            let Some(file_id) = &self.file_id else { return };
+            cx.widget_action(
+                widget_uid,
+                &scope.path,
+                DownloadAction::Cancel(file_id.clone()),
+            );
+            cx.widget_action(widget_uid, &scope.path, ModalAction::CloseModal);
+        }
+    }
+}
+
+impl DownloadNotificationPopup {
+    pub fn update_content(&mut self) {
+        match self.download_result {
+            DownloadResult::Success => self.show_success_content(),
+            DownloadResult::Failure => self.show_failure_content(),
+        }
+    }
+
+    fn show_success_content(&mut self) {
+        self.view(id!(success_icon)).set_visible(true);
+        self.view(id!(failure_icon)).set_visible(false);
+
+        self.view(id!(success_actions)).set_visible(true);
+        self.view(id!(failure_actions)).set_visible(false);
+
+        self.label(id!(title))
+            .set_text("Model Downloaded Successfully");
+
+        self.label(id!(summary))
+            .set_text(&(format!("{} successfuly downloaded.", &self.filename)));
+    }
+
+    fn show_failure_content(&mut self) {
+        self.view(id!(success_icon)).set_visible(false);
+        self.view(id!(failure_icon)).set_visible(true);
+
+        self.view(id!(success_actions)).set_visible(false);
+        self.view(id!(failure_actions)).set_visible(true);
+
+        self.label(id!(title))
+            .set_text("Errors while downloading models");
+
+        self.label(id!(summary)).set_text(
+            &(format!(
+                "{} encountered some errors when downloading.",
+                &self.filename
+            )),
+        );
+    }
+}
+
+impl DownloadNotificationPopupRef {
+    pub fn set_data(&mut self, file: &File, download_result: DownloadResult) {
+        if let Some(mut inner) = self.borrow_mut() {
+            inner.file_id = Some(file.id.clone());
+            inner.filename = file.name.clone();
+            inner.download_result = download_result;
+
+            inner.update_content();
+        }
+    }
+}
