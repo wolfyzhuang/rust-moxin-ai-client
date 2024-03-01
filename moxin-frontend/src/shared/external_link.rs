@@ -12,4 +12,10 @@ live_design! {
     ExternalLink = {{ExternalLink}} {
         width: Fit,
         width: Fit,
-        height: Fit
+        height: Fit,
+        flow: Down,
+        link = <LinkLabel> {
+            width: Fit,
+            draw_text: {
+                text_style: <REGULAR_FONT>{font_size: 9},
+                fn get_color(self) -> ve
