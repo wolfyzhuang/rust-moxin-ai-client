@@ -23,4 +23,12 @@ live_design! {
                         mix(
                             MODEL_LINK_FONT_COLOR,
                             MODEL_LINK_FONT_COLOR,
-                           
+                            self.hover
+                        ),
+                        MODEL_LINK_FONT_COLOR,
+                        self.pressed
+                    )
+                }
+            }
+        }
+        underline = <Line> 
