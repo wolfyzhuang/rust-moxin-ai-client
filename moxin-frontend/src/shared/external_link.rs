@@ -18,4 +18,9 @@ live_design! {
             width: Fit,
             draw_text: {
                 text_style: <REGULAR_FONT>{font_size: 9},
-                fn get_color(self) -> ve
+                fn get_color(self) -> vec4 {
+                    return mix(
+                        mix(
+                            MODEL_LINK_FONT_COLOR,
+                            MODEL_LINK_FONT_COLOR,
+                           
