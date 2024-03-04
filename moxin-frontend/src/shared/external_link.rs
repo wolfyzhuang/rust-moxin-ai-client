@@ -31,4 +31,15 @@ live_design! {
                 }
             }
         }
-        underline = <Line> 
+        underline = <Line> {
+            width: Fill,
+            height: 1,
+            show_bg: true,
+            draw_bg: {
+                color: (MODEL_LINK_FONT_COLOR)
+            }
+        }
+    }
+}
+
+#[derive(Live, Live
