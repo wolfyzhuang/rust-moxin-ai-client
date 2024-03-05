@@ -52,4 +52,9 @@ pub struct ExternalLink {
 }
 
 impl Widget for ExternalLink {
-    fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: 
+    fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+        self.view.handle_event(cx, event, scope);
+        self.widget_match_event(cx, event, scope);
+    }
+
+    fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope
