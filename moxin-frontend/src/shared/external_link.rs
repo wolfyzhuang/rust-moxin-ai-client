@@ -42,4 +42,14 @@ live_design! {
     }
 }
 
-#[derive(Live, Live
+#[derive(Live, LiveHook, Widget)]
+pub struct ExternalLink {
+    #[deref]
+    view: View,
+
+    #[rust]
+    url: String,
+}
+
+impl Widget for ExternalLink {
+    fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: 
