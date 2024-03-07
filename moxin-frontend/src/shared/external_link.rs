@@ -57,4 +57,10 @@ impl Widget for ExternalLink {
         self.widget_match_event(cx, event, scope);
     }
 
-    fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope
+    fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
+        self.view.draw_walk(cx, scope, walk)
+    }
+}
+
+impl WidgetMatchEvent for ExternalLink {
+    fn handle_actions(&mut self, _cx: &mut Cx, actions: &Actions, _scope: &mu
