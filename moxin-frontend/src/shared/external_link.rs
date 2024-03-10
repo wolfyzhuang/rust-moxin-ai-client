@@ -82,3 +82,9 @@ impl ExternalLink {
 }
 
 impl ExternalLinkRef {
+    pub fn set_url(&mut self, url: &str) {
+        if let Some(mut inner) = self.borrow_mut() {
+            inner.set_url(url);
+        }
+    }
+}
