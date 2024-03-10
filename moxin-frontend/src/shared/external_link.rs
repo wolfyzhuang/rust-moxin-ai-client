@@ -71,4 +71,14 @@ impl WidgetMatchEvent for ExternalLink {
     }
 }
 
-impl ExternalLi
+impl ExternalLink {
+    pub fn set_url(&mut self, url: &str) {
+        self.url = url.to_string();
+    }
+
+    fn open_url(&self) {
+        let _ = robius_open::Uri::new(&self.url).open();
+    }
+}
+
+impl ExternalLinkRef {
