@@ -19,4 +19,10 @@ live_design! {
             uniform rotation_angle: 0.0,
             fn clip_and_transform_vertex(self, rect_pos: vec2, rect_size: vec2) -> vec4 {
                 let clipped: vec2 = clamp(
-                    self.geom_pos * rect_
+                    self.geom_pos * rect_size + rect_pos,
+                    self.draw_clip.xy,
+                    self.draw_clip.zw
+                )
+                self.pos = (clipped - rect_pos) / rect_size
+
+     
