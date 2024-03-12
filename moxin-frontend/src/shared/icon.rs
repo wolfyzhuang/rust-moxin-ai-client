@@ -16,4 +16,7 @@ live_design! {
         }
 
         draw_icon: {
-            uniform rotation_angl
+            uniform rotation_angle: 0.0,
+            fn clip_and_transform_vertex(self, rect_pos: vec2, rect_size: vec2) -> vec4 {
+                let clipped: vec2 = clamp(
+                    self.geom_pos * rect_
