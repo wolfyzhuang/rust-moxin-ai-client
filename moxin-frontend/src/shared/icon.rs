@@ -25,4 +25,6 @@ live_design! {
                 )
                 self.pos = (clipped - rect_pos) / rect_size
 
-     
+                // Calculate the texture coordinates based on the rotation angle
+                let angle_rad = self.rotation_angle * 3.14159265359 / 180.0;
+                let co
