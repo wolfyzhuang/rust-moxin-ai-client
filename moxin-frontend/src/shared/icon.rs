@@ -27,4 +27,9 @@ live_design! {
 
                 // Calculate the texture coordinates based on the rotation angle
                 let angle_rad = self.rotation_angle * 3.14159265359 / 180.0;
-                let co
+                let cos_angle = cos(angle_rad);
+                let sin_angle = sin(angle_rad);
+                let rot_matrix = mat2(
+                    cos_angle, -sin_angle,
+                    sin_angle, cos_angle
+  
