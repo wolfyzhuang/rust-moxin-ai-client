@@ -32,4 +32,8 @@ live_design! {
                 let rot_matrix = mat2(
                     cos_angle, -sin_angle,
                     sin_angle, cos_angle
-  
+                );
+                self.tex_coord1 = mix(
+                    self.icon_t1.xy,
+                    self.icon_t2.xy,
+                    (rot_matrix * (self.pos.xy - vec2(0.5))) +
