@@ -36,4 +36,9 @@ live_design! {
                 self.tex_coord1 = mix(
                     self.icon_t1.xy,
                     self.icon_t2.xy,
-                    (rot_matrix * (self.pos.xy - vec2(0.5))) +
+                    (rot_matrix * (self.pos.xy - vec2(0.5))) + vec2(0.5)
+                );
+
+                return self.camera_projection * (self.camera_view * (self.view_transform * vec4(
+                    clipped.x,
+                   
