@@ -41,4 +41,13 @@ live_design! {
 
                 return self.camera_projection * (self.camera_view * (self.view_transform * vec4(
                     clipped.x,
-                   
+                    clipped.y,
+                    self.draw_depth + self.draw_zbias,
+                    1.
+                )))
+            }
+        }
+
+        draw_bg: {
+            instance color: #0000,
+    
