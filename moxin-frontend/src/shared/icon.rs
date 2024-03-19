@@ -50,4 +50,14 @@ live_design! {
 
         draw_bg: {
             instance color: #0000,
-    
+            fn pixel(self) -> vec4 {
+                return self.color;
+            }
+        }
+    }
+}
+
+#[derive(Live, LiveHook, Widget)]
+pub struct Icon {
+    #[redraw]
+    #
