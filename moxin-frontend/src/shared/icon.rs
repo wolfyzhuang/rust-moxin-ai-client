@@ -60,4 +60,16 @@ live_design! {
 #[derive(Live, LiveHook, Widget)]
 pub struct Icon {
     #[redraw]
-    #
+    #[live]
+    draw_bg: DrawQuad,
+    #[live]
+    draw_icon: DrawIcon,
+    #[live]
+    icon_walk: Walk,
+    #[walk]
+    walk: Walk,
+    #[layout]
+    layout: Layout,
+}
+
+impl Widget for Icon {
