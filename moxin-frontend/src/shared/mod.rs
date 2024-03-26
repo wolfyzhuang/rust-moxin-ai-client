@@ -10,4 +10,10 @@ pub mod styles;
 pub mod utils;
 pub mod widgets;
 
-pub
+pub fn live_design(cx: &mut Cx) {
+    styles::live_design(cx);
+    resource_imports::live_design(cx);
+    widgets::live_design(cx);
+    icon::live_design(cx);
+    modal::live_design(cx);
+    exte
