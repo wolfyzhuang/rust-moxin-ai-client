@@ -16,4 +16,6 @@ pub fn live_design(cx: &mut Cx) {
     widgets::live_design(cx);
     icon::live_design(cx);
     modal::live_design(cx);
-    exte
+    external_link::live_design(cx);
+    download_notification_popup::live_design(cx);
+}
