@@ -11,4 +11,6 @@ live_design! {
 
     BOLD_FONT = {
         font_size: (12),
-   
+        font: {path: dep("crate://makepad-widgets/resources/GoNotoKurrent-Bold.ttf")}
+    }
+}
