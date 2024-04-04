@@ -23,4 +23,6 @@ pub fn format_model_downloaded_size(size: &str, progress: f64) -> Result<String>
     }
 }
 
-pub fn hugging_face_mo
+pub fn hugging_face_model_url(model_id: &str) -> String {
+    format!("{}/{}", HUGGING_FACE_BASE_URL, model_id)
+}
