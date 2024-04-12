@@ -74,3 +74,17 @@ pub struct PendingDownload {
 // We should consider using a different identifier in the future if more
 // models sources are added.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct Model {
+    pub id: ModelID,
+    pub name: String,
+    pub summary: String,
+    pub size: String,
+    pub requires: String,
+    pub architecture: String,
+    pub released_at: DateTime<Utc>,
+    pub files: Vec<File>,
+    pub author: Author,
+    pub like_count: u32,
+    pub download_count: u32,
+    pub metrics: HashMap<String, f32>,
+}
