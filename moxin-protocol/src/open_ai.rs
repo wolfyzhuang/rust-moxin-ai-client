@@ -125,3 +125,29 @@ pub struct ChunkChoiceData {
     pub finish_reason: Option<StopReason>,
     pub index: u32,
     pub delta: MessageData,
+    pub logprobs: Option<LogProbsData>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct ChatResponseChunkData {
+    pub id: String,
+    pub choices: Vec<ChunkChoiceData>,
+    pub created: u32,
+    pub model: ModelID,
+    pub system_fingerprint: String,
+
+    #[serde(default = "response_chunk_object")]
+    pub object: String,
+}
+
+fn response_chunk_object() -> String {
+    "chat.completion.chunk".to_string()
+}
+
+#[derive(Clone, Debug)]
+pub enum ChatResponse {
+    // https://platform.openai.com/docs/api-reference/chat/object
+    ChatFinalResponseData(ChatResponseData),
+    // https://platform.openai.com/docs/api-reference/chat/streaming
+    ChatResponseChunk(ChatResponseChunkData),
+}
