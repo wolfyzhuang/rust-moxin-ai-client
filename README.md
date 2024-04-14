@@ -4,4 +4,10 @@ Rust Moxin is an AI LLM client showcasing the functionalities of Robius, a multi
 
 The below table shows the host systems that currently support building Robrix for different target platforms.
 | Host OS | Target Platform | Builds? | Runs? |
-| ------- | ---------
+| ------- | --------------- | ------- | ----- |
+| macOS | macOS | ✅ | ✅ |
+| Linux | ubuntu(x86_64-unknown-linux-gnu) | ✅ | ? |
+
+## Build and Run Instructions
+
+1. [Install Rust](https://www.rust-lang.org/tools/ins
