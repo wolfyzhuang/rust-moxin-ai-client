@@ -17,4 +17,18 @@ The below table shows the host systems that currently support building Robrix fo
 ```sh
 curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- --plugins wasi_nn-ggml
 
-source $H
+source $HOME/.wasmedge/env
+```
+
+### macOS Users
+
+For desktop users on macOS, you simply have to run:
+
+```sh
+cd ~/rust-moxin-ai-client
+cargo run
+```
+
+### Linux Users
+
+On Linux, ensure the following depen
