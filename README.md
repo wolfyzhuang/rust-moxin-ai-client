@@ -31,4 +31,13 @@ cargo run
 
 ### Linux Users
 
-On Linux, ensure the following depen
+On Linux, ensure the following dependencies are installed (considering Ubuntu as an example):
+
+```sh
+sudo apt-get update
+# openssl
+sudo apt-get install libssl-dev pkg-config
+# libclang for bindgen
+sudo apt-get install llvm clang libclang-dev
+# binfmt
+sudo apt install binfm
