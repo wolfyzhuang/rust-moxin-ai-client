@@ -40,4 +40,14 @@ sudo apt-get install libssl-dev pkg-config
 # libclang for bindgen
 sudo apt-get install llvm clang libclang-dev
 # binfmt
-sudo apt install binfm
+sudo apt install binfmt-support
+# Xcursor、X11、asound and pulse
+sudo apt-get install libxcursor-dev libx11-dev libasound2-dev libpulse-dev
+```
+
+Then, run the following commands:
+
+```sh
+cd ~/rust-moxin-ai-client
+cargo run
+```
